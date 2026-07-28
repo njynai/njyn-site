@@ -144,3 +144,26 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   .rev { opacity: 1; transform: none; transition: none; }
   .ring-outer, .ring-inner, .core, .shimmer-rule, .cursor-blink { animation: none; }
 }
+
+/* Attention glow for the live demo console */
+.glow-pulse {
+  box-shadow: 0 0 0 1px rgba(201, 169, 110, 0.35), 0 0 34px rgba(201, 169, 110, 0.10);
+  animation: glow 3s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(201, 169, 110, 0.35), 0 0 26px rgba(201, 169, 110, 0.08); }
+  50% { box-shadow: 0 0 0 1px rgba(201, 169, 110, 0.6), 0 0 52px rgba(201, 169, 110, 0.22); }
+}
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #3AD07A;
+  box-shadow: 0 0 10px rgba(58, 208, 122, 0.8);
+  animation: ignite 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow-pulse { animation: none; }
+  .live-dot { animation: none; }
+}
