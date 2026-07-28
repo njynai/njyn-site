@@ -1,0 +1,84 @@
+---
+import "../styles/global.css";
+import { BOOKING_URL, BOOKING_LABEL } from "../config";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "NJYN.AI · The engine that makes AI recommend you",
+  description = "AI search visibility and workflow automation for clinics and small businesses. Run a live prompt and see who AI recommends today. Toronto.",
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href="https://njyn.ai" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <nav class="fixed top-0 left-0 right-0 z-50 border-b border-gold/20 bg-obsidian/90 backdrop-blur-md">
+      <div class="flex items-center justify-between h-[72px] px-6 md:px-20 lg:px-28">
+        <a href="#top" class="flex items-center gap-3 no-underline">
+          <svg width="32" height="32" viewBox="0 0 100 100" aria-hidden="true">
+            <polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="none" stroke="#E8E4F0" stroke-width="3" />
+            <circle cx="50" cy="50" r="10" fill="#C9A96E" />
+          </svg>
+          <span class="display text-[1.15rem] tracking-[0.08em]">NJYN<span class="text-gold">.AI</span></span>
+        </a>
+        <div class="hidden md:flex items-center gap-9 label !text-[0.8rem] text-muted">
+          <a href="#demo" class="hover:text-txt transition-colors no-underline">Live demo</a>
+          <a href="#system" class="hover:text-txt transition-colors no-underline">The system</a>
+          <a href="#process" class="hover:text-txt transition-colors no-underline">Process</a>
+          <a href="#operator" class="hover:text-txt transition-colors no-underline">Operator</a>
+        </div>
+        <a
+          href={BOOKING_URL}
+          class="display text-[0.8rem] tracking-[0.04em] bg-gold text-obsidian px-5 py-3 no-underline hover:bg-gold2 transition-colors"
+          >{BOOKING_LABEL} &rarr;</a
+        >
+      </div>
+    </nav>
+
+    <slot />
+
+    <footer class="relative z-10 border-t border-gold/20 py-5">
+      <div class="px-6 md:px-20 lg:px-28 flex flex-wrap justify-between gap-2 label text-muted">
+        <span>&copy; 2026 NJYN.AI · Toronto</span>
+        <span>njyn.ai · jasontrinh.com</span>
+      </div>
+    </footer>
+
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+      document.querySelectorAll(".rev").forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,491 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { BOOKING_URL, BOOKING_LABEL } from "../config";
+
+const system = [
+  {
+    code: "E·01",
+    name: "Visibility",
+    blurb:
+      "The flagship. I run the questions your customers ask AI engines, engineer your presence in the sources those engines trust, and report your citation share every month. When AI answers, you are in it.",
+  },
+  {
+    code: "E·02",
+    name: "Automation",
+    blurb:
+      "The layer underneath. Intake, document generation, reporting, and internal tooling that turn the demand visibility creates into work your team can actually absorb.",
+  },
+  {
+    code: "E·03",
+    name: "Proof",
+    blurb:
+      "Every engagement runs on receipts. A tracked prompt set, a citation-share number, an hours-saved number. If the engine is not moving them, you will see that too.",
+  },
+];
+---
+
+<Layout>
+  <!-- HERO -->
+  <header id="top" class="relative z-10 overflow-hidden pt-32 md:pt-40 pb-4 md:pb-8">
+    <div class="orb" aria-hidden="true"></div>
+
+    <div class="grid md:grid-cols-[1.2fr_0.8fr] items-center gap-8 px-6 md:px-20 lg:px-28 w-full relative z-10">
+      <div class="border-l-2 border-gold pl-6 md:pl-10">
+        <p class="label text-muted mb-6">NJYN.AI · Toronto · Est. Suite 700</p>
+        <h1 class="display text-[clamp(2.7rem,7.4vw,6.2rem)]">
+          The engine that makes AI
+          <span class="serif-accent text-gold2">recommend you.</span>
+        </h1>
+        <p class="mt-8 max-w-[48ch] text-muted text-[clamp(1rem,1.4vw,1.15rem)] leading-relaxed">
+          ChatGPT, Claude, Perplexity, and Google AI are answering your customers'
+          questions right now. NJYN.AI is the system that puts your business in
+          those answers, and the automation that handles what comes through.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center gap-5">
+          <a
+            href={BOOKING_URL}
+            class="display text-[0.85rem] tracking-[0.04em] bg-gold text-obsidian px-8 py-4 no-underline hover:bg-gold2 transition-colors"
+            >{BOOKING_LABEL} &rarr;</a
+          >
+          <a href="#demo" class="label text-muted no-underline hover:text-txt transition-colors"
+            >Or run a live prompt &darr;</a
+          >
+        </div>
+      </div>
+
+      <div class="justify-self-center md:justify-self-end pb-2">
+        <svg class="w-[150px] md:w-[210px] h-auto" viewBox="0 0 200 200" aria-label="NJYN engine mark" role="img">
+          <polygon points="100,10 178,55 178,145 100,190 22,145 22,55" fill="none" stroke="#E8E4F0" stroke-width="2.5" />
+          <g class="ring-outer">
+            <circle cx="100" cy="100" r="62" fill="none" stroke="#C9A96E" stroke-width="1" stroke-dasharray="8 10" opacity="0.8" />
+          </g>
+          <g class="ring-inner">
+            <circle cx="100" cy="100" r="44" fill="none" stroke="#9B94B0" stroke-width="1" stroke-dasharray="4 8" opacity="0.7" />
+          </g>
+          <g stroke="#E8E4F0" stroke-width="1" opacity="0.5">
+            <line x1="100" y1="70" x2="100" y2="130" transform="rotate(0 100 100)" />
+            <line x1="100" y1="70" x2="100" y2="130" transform="rotate(60 100 100)" />
+            <line x1="100" y1="70" x2="100" y2="130" transform="rotate(120 100 100)" />
+          </g>
+          <circle class="core" cx="100" cy="100" r="12" fill="#C9A96E" />
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="shimmer-rule relative z-10" aria-hidden="true"></div>
+
+  <!-- LIVE DEMO -->
+  <section id="demo" class="relative z-10 py-20 md:py-32">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">Ask the engine</h2>
+        <span class="label text-muted hidden sm:block">FIG. 01 · Live · Not a mockup</span>
+      </div>
+
+      <div class="grid md:grid-cols-[0.9fr_1.1fr] gap-10 md:gap-16 items-start">
+        <div class="rev">
+          <p class="serif-accent text-[clamp(1.4rem,2.4vw,2rem)] leading-snug mb-6 text-txt">
+            Type what your customer would ask an AI. Watch who gets recommended.
+          </p>
+          <p class="text-muted text-[0.95rem] leading-relaxed max-w-[46ch]">
+            This demo runs a real AI model with live web search, the same way
+            consumer assistants answer. If your business is not in the answer,
+            that is the problem NJYN.AI exists to fix.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-2.5" id="demo-suggestions">
+            <button data-q="Best cosmetic clinic in Toronto?" class="label text-muted border border-gold/25 px-3.5 py-2 hover:border-gold hover:text-txt transition-colors cursor-pointer bg-transparent">Best cosmetic clinic in Toronto?</button>
+            <button data-q="Who should I hire to renovate a kitchen in Mississauga?" class="label text-muted border border-gold/25 px-3.5 py-2 hover:border-gold hover:text-txt transition-colors cursor-pointer bg-transparent">Kitchen reno in Mississauga?</button>
+            <button data-q="Best accountant for a small business in Ontario?" class="label text-muted border border-gold/25 px-3.5 py-2 hover:border-gold hover:text-txt transition-colors cursor-pointer bg-transparent">Small business accountant, Ontario?</button>
+          </div>
+        </div>
+
+        <div class="rev brackets bg-obsidian2 border border-gold/25">
+          <div class="label text-muted border-b border-gold/20 px-5 py-3.5 flex justify-between">
+            <span>NJYN // prompt console</span>
+            <span class="text-gold" id="demo-status">Ready</span>
+          </div>
+          <div class="p-5">
+            <div class="flex gap-3">
+              <input
+                id="demo-input"
+                type="text"
+                maxlength="200"
+                placeholder="e.g. Best med spa in Toronto?"
+                class="flex-1 bg-transparent border border-gold/25 px-4 py-3 text-txt placeholder-muted font-mono text-[0.86rem] focus:border-gold"
+              />
+              <button
+                id="demo-run"
+                class="display text-[0.75rem] tracking-[0.04em] bg-gold text-obsidian px-6 py-3 hover:bg-gold2 transition-colors cursor-pointer"
+                >Run</button
+              >
+            </div>
+            <div id="demo-output" class="terminal-out text-muted mt-5 min-h-[220px] border-t border-gold/15 pt-5">
+              <span class="text-gold">&gt;</span> Awaiting prompt<span class="cursor-blink">_</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rev mt-10 flex flex-wrap items-center justify-between gap-5 border border-gold/25 px-6 md:px-8 py-5">
+        <p class="label text-muted">Not in the answer? That's fixable.</p>
+        <a
+          href={BOOKING_URL}
+          class="display text-[0.78rem] tracking-[0.04em] text-gold2 no-underline border-b-2 border-gold pb-1 hover:text-txt transition-colors"
+          >{BOOKING_LABEL} &rarr;</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- THE SYSTEM -->
+  <section id="system" class="relative z-10 pb-20 md:pb-32">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">The system</h2>
+        <span class="label text-muted hidden sm:block">FIG. 02 · Visibility, automation, proof</span>
+      </div>
+
+      <div class="border-t border-gold/25">
+        {
+          system.map((s) => (
+            <div class="rev grid md:grid-cols-[110px_1fr_1.3fr] gap-3 md:gap-12 items-baseline border-b border-gold/25 py-8 md:py-12 hover:bg-obsidian2 transition-colors">
+              <span class="label text-muted">{s.code}</span>
+              <h3 class="display text-[clamp(1.8rem,4.2vw,3.2rem)]">{s.name}</h3>
+              <p class="text-muted text-[0.97rem] leading-relaxed max-w-[54ch]">{s.blurb}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- OPERATOR -->
+  <!-- THE PROCESS -->
+  <section id="process" class="relative z-10 pb-20 md:pb-32">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">The process</h2>
+        <span class="label text-muted hidden sm:block">FIG. 03 · How a business earns the recommendation</span>
+      </div>
+
+      <p class="rev serif-accent text-[clamp(1.4rem,2.4vw,2rem)] max-w-[40ch] leading-snug mb-12 md:mb-16 text-txt">
+        AI engines don't rank pages. They synthesize answers from sources they
+        trust. Getting recommended means engineering every layer they read.
+      </p>
+
+      <div class="border-t border-gold/25">
+        {
+          [
+            {
+              code: "P·01",
+              name: "Prompt intelligence",
+              blurb:
+                "We build your prompt set: the real questions your customers ask AI, from \"best in the city\" to comparisons, prices, and \"is it worth it\". Then I run a full baseline across ChatGPT, Claude, Perplexity, and Google AI, logging every business recommended and every source cited. This is the map: where you appear, where competitors own the answer, and which sources put them there.",
+              deliver: "Baseline visibility report · Tracked prompt set",
+            },
+            {
+              code: "P·02",
+              name: "Citation source mapping",
+              blurb:
+                "Engines lean on a specific diet per industry: review platforms, directories, local press, forums, and best-of lists. I trace which sources actually drive recommendations in your category and audit your presence in each. Most businesses discover they're invisible in exactly the places engines read most.",
+              deliver: "Source authority map · Presence gap audit",
+            },
+            {
+              code: "P·03",
+              name: "Entity & site engineering",
+              blurb:
+                "Your site gets rebuilt for machine readers: structured data that declares who you are, what you do, and where; crawler access for the AI bots most sites accidentally block; consistent business details everywhere you're listed; and pages rewritten to be quotable, direct answers, real credentials, specifics an engine can lift into a recommendation.",
+              deliver: "Schema & crawler implementation · Quotable content rewrite",
+            },
+            {
+              code: "P·04",
+              name: "Authority & earned mentions",
+              blurb:
+                "Most of what engines cite is earned, not owned. So we build your presence in the third-party sources they trust: review velocity where it counts, directory and list placements, local press, and expert commentary in your niche. This is the slowest lever and the strongest one, and it compounds monthly.",
+              deliver: "Mention pipeline · Review & listing programme",
+            },
+            {
+              code: "P·05",
+              name: "Track, prove, iterate",
+              blurb:
+                "My tracking system re-runs your prompt set on schedule and logs every recommendation, yours and your competitors'. Each month you see citation share, what moved, what didn't, and where the next month's effort goes. No vanity metrics, just whether the engines name you more often than they did.",
+              deliver: "Monthly citation-share report · Next-cycle plan",
+            },
+          ].map((p) => (
+            <div class="rev grid md:grid-cols-[110px_1fr_1.5fr] gap-3 md:gap-12 items-baseline border-b border-gold/25 py-8 md:py-12 hover:bg-obsidian2 transition-colors">
+              <span class="label text-muted">{p.code}</span>
+              <h3 class="display text-[clamp(1.5rem,3vw,2.4rem)]">{p.name}</h3>
+              <div>
+                <p class="text-muted text-[0.97rem] leading-relaxed max-w-[58ch] mb-4">{p.blurb}</p>
+                <p class="label text-gold">{p.deliver}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="rev mt-10 flex flex-wrap items-center justify-between gap-5 border border-gold/25 px-6 md:px-8 py-5">
+        <p class="label text-muted">Phase one starts with your prompts. We can run them on the call.</p>
+        <a
+          href="mailto:hello@njyn.ai?subject=Book%20a%20call"
+          class="display text-[0.78rem] tracking-[0.04em] text-gold2 no-underline border-b-2 border-gold pb-1 hover:text-txt transition-colors"
+          >Book a call &rarr;</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <section id="operator" class="relative z-10 pb-20 md:pb-32">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">The operator</h2>
+        <span class="label text-muted hidden sm:block">FIG. 04 · One builder, direct line</span>
+      </div>
+
+      <div class="grid md:grid-cols-[1fr_3fr] gap-10 md:gap-16 md:items-stretch">
+        <div class="rev brackets max-w-[340px] md:max-w-none flex flex-col md:min-h-0">
+          <div class="md:flex-1 md:min-h-0 md:relative">
+            <img src="/images/jason.jpg" alt="Jason Trinh, founder of NJYN.AI" class="block w-full md:absolute md:inset-0 md:h-full md:object-cover md:object-center" loading="lazy" />
+          </div>
+          <div class="label text-muted flex justify-between border border-t-0 border-gold/25 px-4 py-3">
+            <span>J. Trinh</span>
+            <span class="text-gold">Founder · Operator</span>
+          </div>
+        </div>
+        <div class="rev">
+          <p class="serif-accent text-[clamp(1.5rem,2.8vw,2.3rem)] leading-snug mb-6 text-txt">
+            NJYN.AI is not an agency. It's Jason Trinh.
+          </p>
+          <div class="grid md:grid-cols-[auto_1fr] gap-8 md:gap-6 mb-10 md:items-stretch">
+            <div>
+              <p class="text-muted leading-relaxed max-w-[52ch] mb-5">
+                I've spent over eight years in surgical business development and
+                management, and I currently run the business operations of two live
+                healthcare facilities in Toronto. Before that, four years building
+                medical spa businesses when they were first gaining traction in this
+                city. The playbook that shaped today's Toronto market? I helped lay
+                those foundations.
+              </p>
+              <p class="text-muted leading-relaxed max-w-[52ch] mb-5">
+                Underneath it all sits more than a decade of training and development:
+                building teams, coaching people, and running successful retail sales
+                businesses. I know what it takes to make a front desk convert, a team
+                perform, and an operation hold its standards when it gets busy.
+              </p>
+              <p class="text-muted leading-relaxed max-w-[52ch]">
+                Every system NJYN.AI sells runs in my own facilities first. When you
+                sign, you get the person who builds, ships, and answers. No account
+                managers, no hand-offs.
+              </p>
+            </div>
+
+            <div class="brackets border border-gold/25 bg-obsidian2 divide-y divide-gold/15 md:flex md:flex-col md:h-full">
+              {
+                [
+                  ["8+", "Years in surgical business development & management"],
+                  ["4", "Years building Toronto's early medical spa market"],
+                  ["10+", "Years in training, team building & retail sales leadership"],
+                ].map(([n, t]) => (
+                  <div class="px-5 py-5 md:px-6 md:py-6 md:flex-1 md:flex md:flex-col md:justify-center">
+                    <div class="display text-[clamp(1.8rem,3vw,2.6rem)] text-gold mb-1.5">{n}</div>
+                    <div class="label text-muted leading-relaxed">{t}</div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+
+          <dl class="border-t border-gold/25">
+            {
+              [
+                ["Base", "Toronto, Canada"],
+                ["Operates", "FORM Face + Body · Toronto Outpatient Surgery Centre"],
+                ["Discipline", "AI search visibility, workflow automation, operations"],
+                ["Direct line", "jasontrinh.com"],
+              ].map(([k, v]) => (
+                <div class="grid grid-cols-[110px_1fr] md:grid-cols-[140px_1fr] gap-4 border-b border-gold/15 py-4 items-baseline">
+                  <dt class="label text-muted">{k}</dt>
+                  <dd class="text-txt text-[0.95rem]">
+                    {v === "jasontrinh.com" ? (
+                      <a href="https://jasontrinh.com" class="text-gold2 no-underline border-b border-gold/40 pb-0.5 hover:text-txt transition-colors">
+                        jasontrinh.com &#8599;
+                      </a>
+                    ) : (
+                      v
+                    )}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="relative z-10 border-t border-gold/25 py-24 md:py-36 overflow-hidden">
+    <div class="orb" aria-hidden="true" style="top:auto; bottom:-260px; right:auto; left:-220px;"></div>
+    <div class="px-6 md:px-20 lg:px-28 relative z-10 grid md:grid-cols-[auto_1fr] md:gap-12 gap-10 md:items-stretch">
+      <div class="md:flex md:flex-col md:justify-between">
+      <div class="rev max-w-[26ch]">
+        <h2 class="display text-[clamp(2.1rem,5.6vw,4.6rem)]">
+          Get in the answer <span class="serif-accent text-gold2">before your competitor does.</span>
+        </h2>
+      </div>
+      <div class="rev mt-10 flex flex-wrap items-center gap-6">
+        <a
+          href={BOOKING_URL}
+          class="display text-[0.9rem] tracking-[0.04em] bg-gold text-obsidian px-10 py-5 no-underline hover:bg-gold2 transition-colors"
+          >{BOOKING_LABEL} &rarr;</a
+        >
+        <div class="label text-muted">
+          30 minutes · We run your prompts live on the call<br />
+          $3,000 to $5,000 per month · Month to month · Limited seats
+        </div>
+      </div>
+      </div>
+
+      <div class="space-y-5 md:space-y-0 md:flex md:flex-col md:justify-between md:gap-5 md:justify-self-stretch">
+      <div class="rev brackets bg-obsidian2 border border-gold/25">
+        <div class="label text-muted border-b border-gold/20 px-5 py-3.5 flex justify-between">
+          <span>NJYN // the call</span>
+          <span class="text-gold flex items-center gap-2"><span class="inline-block w-2 h-2 bg-gold rounded-full core"></span>30 min</span>
+        </div>
+        <div class="divide-y divide-gold/15">
+          {
+            [
+              ["00-10", "We run your customers' prompts live and see who AI recommends today"],
+              ["10-20", "Gap analysis: why the engines pick them, what it takes to change it"],
+              ["20-30", "Whether NJYN.AI fits your business. If it doesn't, I'll say so"],
+            ].map(([t, d]) => (
+              <div class="grid grid-cols-[64px_1fr] gap-4 px-5 py-5 items-baseline">
+                <span class="label text-gold">{t}</span>
+                <span class="text-muted text-[0.92rem] leading-relaxed">{d}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="rev border border-gold/25 bg-obsidian2">
+        <div class="label text-muted border-b border-gold/20 px-5 py-3.5">The path from invisible to recommended</div>
+        <div class="divide-y divide-gold/15">
+          {
+            [
+              ["P·01", "Prompts", "Baseline who AI names today"],
+              ["P·02", "Sources", "Map what the engines cite"],
+              ["P·03", "Engineering", "Schema, crawlers, quotable pages"],
+              ["P·04", "Authority", "Earned mentions that compound"],
+              ["P·05", "Proof", "Citation share, every month"],
+            ].map(([c, n, d]) => (
+              <div class="grid grid-cols-[52px_150px_1fr] gap-4 px-5 py-3.5 items-baseline">
+                <span class="label text-gold">{c}</span>
+                <span class="display text-[0.85rem] tracking-[0.03em]">{n}</span>
+                <span class="text-muted text-[0.8rem] leading-relaxed">{d}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const input = document.getElementById("demo-input") as HTMLInputElement;
+    const run = document.getElementById("demo-run") as HTMLButtonElement;
+    const out = document.getElementById("demo-output") as HTMLElement;
+    const status = document.getElementById("demo-status") as HTMLElement;
+
+    const SAMPLE =
+      "For a cosmetic clinic in Toronto, a few consistently recommended options: " +
+      "FORM Face + Body (midtown, surgeon-led, strong reviews for facial and body procedures), " +
+      "and two or three competitors an AI names before it ever mentions you. " +
+      "\n\n[Sample output. Deploy with an API key to run live prompts.]";
+
+    function setBusy(b: boolean) {
+      run.disabled = b;
+      status.textContent = b ? "Running..." : "Ready";
+    }
+
+    function typeOut(text: string) {
+      out.textContent = "";
+      let i = 0;
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) {
+        out.textContent = "> " + text;
+        return;
+      }
+      out.textContent = "> ";
+      const t = setInterval(() => {
+        out.textContent += text.slice(i, i + 3);
+        i += 3;
+        if (i >= text.length) clearInterval(t);
+      }, 12);
+    }
+
+    async function callApi(prompt: string): Promise<string> {
+      // 1) Deployed path: Cloudflare Pages Function holding the key server-side.
+      try {
+        const r = await fetch("/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
+        if (r.ok) {
+          const d = await r.json();
+          if (d.text) return d.text;
+        }
+      } catch {}
+      // 2) Preview path inside Claude artifacts (proxied, no key needed there).
+      try {
+        const r = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-6",
+            max_tokens: 700,
+            system:
+              "You are a consumer AI assistant being asked for a recommendation. Answer directly and name specific businesses or providers with a one-line reason each. Use web search to ground your answer. Keep it under 180 words. Plain text only.",
+            messages: [{ role: "user", content: prompt }],
+            tools: [{ type: "web_search_20250305", name: "web_search" }],
+          }),
+        });
+        if (r.ok) {
+          const d = await r.json();
+          const text = (d.content || [])
+            .filter((b: any) => b.type === "text")
+            .map((b: any) => b.text)
+            .join("\n")
+            .trim();
+          if (text) return text;
+        }
+      } catch {}
+      // 3) Static fallback.
+      return SAMPLE;
+    }
+
+    async function go() {
+      const q = input.value.trim();
+      if (!q) return;
+      setBusy(true);
+      out.textContent = "> Querying live AI with web search...";
+      const text = await callApi(q);
+      typeOut(text);
+      setBusy(false);
+    }
+
+    run.addEventListener("click", go);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") go();
+    });
+    document.querySelectorAll("#demo-suggestions button").forEach((b) => {
+      b.addEventListener("click", () => {
+        input.value = (b as HTMLElement).dataset.q || "";
+        go();
+      });
+    });
+  </script>
+</Layout>
