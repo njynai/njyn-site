@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'" />
+    <title>njyn capture</title>
+  </head>
+  <body>
+    <!-- Hidden window. Chromium owns the audio devices, so capture happens
+         here and the PCM is streamed to the main process over IPC. -->
+    <script src="capture.js"></script>
+  </body>
+</html>

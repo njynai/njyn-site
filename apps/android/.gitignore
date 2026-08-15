@@ -1,0 +1,8 @@
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+captures/
+tools/jvm-selftest/.gradle/
+tools/jvm-selftest/build/

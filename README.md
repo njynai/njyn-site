@@ -31,3 +31,16 @@ and optionally Cloudflare Turnstile on the form.
 
 ## The one CTA
 Edit src/config.ts to point BOOKING_URL at your booking link.
+
+## apps/
+Product code that ships alongside the site. See [apps/README.md](apps/README.md).
+
+- `apps/desktop` — njyn Meeting Notes, an Electron tray app for Windows
+  (also macOS and Linux). Records system audio + mic, transcribes with
+  whisper.cpp locally or a hosted Whisper, and writes a summarised markdown
+  note to `~/MeetingNotes`.
+- `apps/android` — the same app for Android 10+, driven from an ongoing
+  notification instead of a tray icon.
+
+Neither has accounts, cloud storage or telemetry, and neither is part of the
+Astro build.

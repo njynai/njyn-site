@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:"
+    />
+    <title>njyn Meeting Notes</title>
+    <link rel="stylesheet" href="panel.css" />
+  </head>
+  <body>
+    <header>
+      <svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true">
+        <polygon
+          points="50,4 90,27 90,73 50,96 10,73 10,27"
+          fill="none"
+          stroke="#E8E4F0"
+          stroke-width="4"
+        />
+        <circle class="core" cx="50" cy="50" r="11" fill="#C9A96E" />
+      </svg>
+      <span class="wordmark">NJYN<span>.AI</span></span>
+      <span class="label product">Meeting Notes</span>
+    </header>
+
+    <main>
+      <div class="stage brackets">
+        <div class="label status" id="status">Idle</div>
+        <div class="clock idle" id="clock">00:00</div>
+        <div class="meter"><div id="meter"></div></div>
+        <button class="action" id="action">Start Recording</button>
+        <div class="sources">
+          <span class="chip" id="chip-mic"><i class="dot"></i>Mic</span>
+          <span class="chip" id="chip-sys"><i class="dot"></i>System audio</span>
+        </div>
+      </div>
+
+      <div id="notice-slot"></div>
+
+      <section>
+        <h2>Engine</h2>
+        <div class="rule"></div>
+        <div class="row">
+          <span class="k">Transcription</span><span class="v" id="engine-stt">—</span>
+        </div>
+        <div class="row">
+          <span class="k">Summary</span><span class="v" id="engine-llm">—</span>
+        </div>
+        <div class="row">
+          <span class="k">Works offline</span><span class="v" id="engine-offline">—</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Recent notes</h2>
+        <div class="rule"></div>
+        <ul class="notes" id="notes"></ul>
+        <p class="empty" id="notes-empty">No meetings recorded yet.</p>
+      </section>
+    </main>
+
+    <footer>
+      <span class="path" id="notes-dir">~/MeetingNotes</span>
+      <button class="ghost" id="open-folder">Open folder</button>
+      <button class="ghost" id="reload">Reload .env</button>
+    </footer>
+
+    <script src="panel.js"></script>
+  </body>
+</html>
