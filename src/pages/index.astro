@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { BOOKING_URL, BOOKING_LABEL } from "../config";
+import { BOOKING_URL, BOOKING_LABEL, BOOKING_EMAIL_URL, BOOKING_ENABLED } from "../config";
+import BookingEmbed from "../components/BookingEmbed.astro";
 
 const system = [
   {
@@ -395,6 +396,35 @@ const system = [
         </div>
       </div>
       </div>
+    </div>
+  </section>
+
+
+  <!-- BOOK -->
+  <section id="book" class="relative z-10 border-t border-gold/25 py-20 md:py-28 overflow-hidden">
+    <div class="px-6 md:px-20 lg:px-28 relative z-10">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">Pick a time</h2>
+        <span class="label text-muted hidden sm:block">FIG. 05 &middot; 30 minutes &middot; Toronto time</span>
+      </div>
+
+      <div class="rev">
+        <BookingEmbed />
+      </div>
+
+      {
+        BOOKING_ENABLED && (
+          <p class="rev label text-muted mt-6">
+            Times shown in your local timezone. Prefer email?
+            <a
+              href={BOOKING_EMAIL_URL}
+              class="text-gold2 no-underline border-b border-gold/60 hover:text-txt transition-colors"
+            >
+              hello@njyn.ai
+            </a>
+          </p>
+        )
+      }
     </div>
   </section>
 

@@ -29,8 +29,32 @@ prompt. A typical demo query costs a few cents. For a public endpoint,
 add a rate-limiting rule (Security > WAF > Rate limiting rules) on /api/ask
 and optionally Cloudflare Turnstile on the form.
 
-## The one CTA
-Edit src/config.ts to point BOOKING_URL at your booking link.
+## The one CTA (embedded scheduler)
+Every "Book a call" button on the site drives to the same place. Until a
+scheduler is connected they all fall back to email; connect one and they
+scroll to the inline calendar in the `#book` section instead.
+
+Edit `src/config.ts`:
+
+    export const BOOKING_PROVIDER: BookingProvider = "cal";  // or "calendly"
+    export const BOOKING_LINK = "njyn/30min";                // <user>/<event>
+
+- **Cal.com** — `BOOKING_LINK` is the event path, e.g. `njyn/30min`
+  (from https://cal.com/njyn/30min).
+- **Calendly** — same shape, e.g. `njyn/30min`
+  (from https://calendly.com/njyn/30min).
+
+A full URL works for either provider; the origin is stripped. `BOOKING_LABEL`
+sets the button text, `BOOKING_EMAIL_URL` is the fallback, and
+`BOOKING_EMBED_HEIGHT` sizes the calendar box.
+
+The embed is themed to the site palette (dark, gold accent) and its script is
+only fetched once the section is near the viewport or someone follows a
+`#book` link, so it costs nothing on first paint. If the third party is slow
+or blocked, the placeholder stays and offers a direct link to the booking page.
+
+Calendly's background/text colour parameters need a paid Calendly plan; on the
+free plan it renders in Calendly's own light theme inside the same frame.
 
 ## apps/
 Product code that ships alongside the site. See [apps/README.md](apps/README.md).
