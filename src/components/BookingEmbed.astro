@@ -1,0 +1,186 @@
+---
+import {
+  BOOKING_PROVIDER,
+  BOOKING_LINK,
+  BOOKING_ENABLED,
+  BOOKING_EMBED_HEIGHT,
+  BOOKING_EMAIL_URL,
+  BOOKING_LABEL,
+} from "../config";
+
+// Cal.com wants "<user>/<event>"; Calendly wants a full URL. Accept either
+// shape for either provider so config.ts stays a one-liner.
+const slug = BOOKING_LINK.trim().replace(/^https?:\/\/[^/]+\//, "").replace(/^\/|\/$/g, "");
+
+const calendlyUrl =
+  `https://calendly.com/${slug}` +
+  "?background_color=0B0E1A&text_color=E8E4F0&primary_color=C9A96E" +
+  "&hide_gdpr_banner=1&hide_landing_page_details=1";
+
+// Where to send people if the third-party embed never loads.
+const directUrl =
+  BOOKING_PROVIDER === "calendly" ? `https://calendly.com/${slug}` : `https://cal.com/${slug}`;
+---
+
+{
+  BOOKING_ENABLED ? (
+    <div
+      id="booking-embed"
+      class="booking-embed brackets border border-gold/25 bg-obsidian2"
+      style={`min-height:${BOOKING_EMBED_HEIGHT}px`}
+      data-provider={BOOKING_PROVIDER}
+      data-link={BOOKING_PROVIDER === "calendly" ? calendlyUrl : slug}
+      data-height={String(BOOKING_EMBED_HEIGHT)}
+      data-direct={directUrl}
+    >
+      <div class="booking-fallback label text-muted flex flex-col items-center justify-center gap-4 py-24">
+        <span class="flex items-center gap-3">
+          <span class="inline-block w-2 h-2 bg-gold rounded-full core" />
+          Loading the calendar
+        </span>
+        <a
+          href={directUrl}
+          class="text-gold2 no-underline border-b border-gold/60 hover:text-txt transition-colors"
+        >
+          Or open it in a new tab &rarr;
+        </a>
+      </div>
+    </div>
+  ) : (
+    <div class="brackets border border-gold/25 bg-obsidian2 px-6 md:px-10 py-12 text-center">
+      <p class="label text-muted">Scheduler not connected yet</p>
+      <p class="mt-5 text-muted max-w-[46ch] mx-auto leading-relaxed">
+        Email me and I'll send back two or three times that work. Thirty minutes,
+        your prompts run live on the call.
+      </p>
+      <a
+        href={BOOKING_EMAIL_URL}
+        class="inline-block mt-8 display text-[0.85rem] tracking-[0.04em] bg-gold text-obsidian px-8 py-4 no-underline hover:bg-gold2 transition-colors"
+      >
+        {BOOKING_LABEL} &rarr;
+      </a>
+    </div>
+  )
+}
+
+{
+  BOOKING_ENABLED && (
+    <script is:inline>
+      (() => {
+        const el = document.getElementById("booking-embed");
+        if (!el) return;
+
+        const provider = el.dataset.provider;
+        const link = el.dataset.link;
+        const height = el.dataset.height;
+        const fallback = el.querySelector(".booking-fallback");
+        let started = false;
+
+        const loadCal = () => {
+          (function (C, A, L) {
+            let p = function (a, ar) { a.q.push(ar); };
+            let d = C.document;
+            C.Cal = C.Cal || function () {
+              let cal = C.Cal;
+              let ar = arguments;
+              if (!cal.loaded) {
+                cal.ns = {};
+                cal.q = cal.q || [];
+                d.head.appendChild(d.createElement("script")).src = A;
+                cal.loaded = true;
+              }
+              if (ar[0] === L) {
+                const api = function () { p(api, arguments); };
+                const namespace = ar[1];
+                api.q = api.q || [];
+                if (typeof namespace === "string") {
+                  cal.ns[namespace] = cal.ns[namespace] || api;
+                  p(cal.ns[namespace], ar);
+                  p(cal, ["initNamespace", namespace]);
+                } else {
+                  p(cal, ar);
+                }
+                return;
+              }
+              p(cal, ar);
+            };
+          })(window, "https://app.cal.com/embed/embed.js", "init");
+
+          window.Cal("init", { origin: "https://cal.com" });
+          window.Cal("inline", {
+            elementOrSelector: "#booking-embed",
+            calLink: link,
+            layout: "month_view",
+          });
+          window.Cal("ui", {
+            theme: "dark",
+            layout: "month_view",
+            hideEventTypeDetails: false,
+            cssVarsPerTheme: {
+              dark: { "cal-brand": "#C9A96E", "cal-bg-muted": "#10141F" },
+            },
+          });
+        };
+
+        const loadCalendly = () => {
+          const mount = document.createElement("div");
+          mount.className = "calendly-inline-widget";
+          mount.dataset.url = link;
+          mount.style.minWidth = "320px";
+          mount.style.height = height + "px";
+          el.appendChild(mount);
+
+          const s = document.createElement("script");
+          s.src = "https://assets.calendly.com/assets/external/widget.js";
+          s.async = true;
+          document.head.appendChild(s);
+        };
+
+        const start = () => {
+          if (started) return;
+          started = true;
+
+          // Drop the placeholder only once the scheduler's iframe is actually
+          // in the DOM, so a blocked or slow third party leaves a usable link
+          // behind instead of an empty box.
+          if (fallback) {
+            const mo = new MutationObserver(() => {
+              if (el.querySelector("iframe")) {
+                mo.disconnect();
+                clearTimeout(timer);
+                fallback.remove();
+              }
+            });
+            mo.observe(el, { childList: true, subtree: true });
+
+            var timer = setTimeout(() => {
+              mo.disconnect();
+              const msg = fallback.querySelector("span");
+              if (msg) msg.textContent = "The calendar could not load here.";
+            }, 10000);
+          }
+
+          provider === "calendly" ? loadCalendly() : loadCal();
+        };
+
+        // Third-party scheduler JS is heavy, so it only loads once the section
+        // is near the viewport, or the moment someone follows a #book CTA.
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              io.disconnect();
+              start();
+            }
+          },
+          { rootMargin: "600px" }
+        );
+        io.observe(el);
+
+        if (location.hash === "#book") start();
+        window.addEventListener("hashchange", () => {
+          if (location.hash === "#book") start();
+        });
+      })();
+    </script>
+  )
+}
