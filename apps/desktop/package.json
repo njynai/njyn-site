@@ -1,0 +1,59 @@
+{
+  "name": "njyn-meeting-notes",
+  "productName": "njyn Meeting Notes",
+  "version": "1.0.0",
+  "description": "Local-first meeting notes. Records system audio + mic, transcribes with whisper.cpp, summarises with an LLM. Nothing is stored in the cloud.",
+  "author": "njyn.ai",
+  "license": "MIT",
+  "main": "src/main/main.js",
+  "scripts": {
+    "icons": "node tools/make-icons.js",
+    "selftest": "node tools/selftest.js",
+    "start": "electron .",
+    "dist": "npm run icons && electron-builder",
+    "dist:win": "npm run icons && electron-builder --win",
+    "dist:mac": "npm run icons && electron-builder --mac",
+    "dist:linux": "npm run icons && electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "ai.njyn.meetingnotes",
+    "productName": "njyn Meeting Notes",
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "!**/*.map"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "assets/icon.png",
+      "category": "public.app-category.productivity",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "njyn Meeting Notes records your microphone so it can transcribe meetings on this machine.",
+        "NSAudioCaptureUsageDescription": "njyn Meeting Notes records system audio so it can transcribe the other participants."
+      }
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "assets/icon.png",
+      "category": "Office"
+    }
+  }
+}
