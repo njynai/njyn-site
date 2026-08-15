@@ -24,7 +24,59 @@
       <span class="label product">Meeting Notes</span>
     </header>
 
-    <main>
+    <!-- First run: shown instead of the recorder until something can transcribe. -->
+    <main id="setup" hidden>
+      <section>
+        <h2>Set up</h2>
+        <div class="rule"></div>
+        <p class="lede">
+          One of these two, and you are recording. Everything else already works.
+        </p>
+      </section>
+
+      <div class="step" id="step-key">
+        <div class="step-head"><span class="step-num">1</span> Paste an API key</div>
+        <p class="step-body">
+          Fastest way to a first note. One Groq key covers both transcription and
+          the summary, and a long meeting costs a couple of cents.
+        </p>
+        <p class="step-body">Put it in this file, then hit Reload .env:</p>
+        <p><code id="env-path">~/.njyn/.env</code></p>
+        <pre class="snippet">GROQ_API_KEY=gsk_...</pre>
+        <div class="step-actions">
+          <button class="ghost" id="get-groq">Get a Groq key</button>
+          <button class="ghost" id="get-anthropic">Get an Anthropic key</button>
+        </div>
+      </div>
+
+      <div class="or">or</div>
+
+      <div class="step" id="step-offline">
+        <div class="step-head"><span class="step-num">2</span> Install offline mode</div>
+        <p class="step-body">
+          Downloads whisper.cpp and the medium model (about 1.5 GB) into
+          <code>~/.njyn</code>. After this, audio never leaves this machine —
+          only the optional summary needs a key.
+        </p>
+        <div class="install" id="install-progress" hidden>
+          <div class="label" id="install-stage">Downloading</div>
+          <div class="meter"><div id="install-bar"></div></div>
+          <div class="label" id="install-detail"></div>
+        </div>
+        <div class="step-actions">
+          <button class="action compact" id="install-offline">Install offline mode</button>
+        </div>
+        <p class="step-body dim" id="install-note"></p>
+      </div>
+
+      <div id="setup-notice"></div>
+
+      <div class="step-actions end">
+        <button class="ghost" id="skip-setup">Skip — I will do this later</button>
+      </div>
+    </main>
+
+    <main id="recorder">
       <div class="stage brackets">
         <div class="label status" id="status">Idle</div>
         <div class="clock idle" id="clock">00:00</div>
@@ -52,11 +104,34 @@
         </div>
       </section>
 
+      <!-- Recordings whose note failed to write properly. Retry rebuilds the
+           note from the .wav that is still on disk. -->
+      <section id="attention-section" hidden>
+        <h2>Needs another go</h2>
+        <div class="rule"></div>
+        <ul class="notes" id="attention"></ul>
+      </section>
+
       <section>
         <h2>Recent notes</h2>
         <div class="rule"></div>
         <ul class="notes" id="notes"></ul>
         <p class="empty" id="notes-empty">No meetings recorded yet.</p>
+      </section>
+
+      <section>
+        <h2>Preferences</h2>
+        <div class="rule"></div>
+        <label class="toggle-row">
+          <span>
+            Start at login
+            <em>So it is already there when a meeting starts.</em>
+          </span>
+          <input type="checkbox" id="autostart" />
+        </label>
+        <div class="step-actions">
+          <button class="ghost" id="reprocess-file">Re-process a recording…</button>
+        </div>
       </section>
     </main>
 

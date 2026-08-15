@@ -27,6 +27,12 @@
   box-sizing: border-box;
 }
 
+/* An explicit display on main/section would otherwise beat the UA rule for
+   [hidden], leaving both the setup screen and the recorder on screen at once. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -352,6 +358,181 @@ ul.notes li .arrow {
   font-size: 0.78rem;
   color: var(--muted);
   font-style: italic;
+}
+
+/* ------------------------------------------------------- first-run setup */
+
+.lede {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--txt);
+  margin: 0;
+}
+
+.step {
+  position: relative;
+  border: 1px solid rgba(201, 169, 110, 0.22);
+  background: var(--obsidian2);
+  padding: 16px;
+}
+
+.step-head {
+  font-family: var(--display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--gold);
+  color: var(--obsidian);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  flex: none;
+}
+
+.step.done .step-num {
+  background: var(--green);
+}
+
+.step-body {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.step-body.dim:empty {
+  display: none;
+}
+
+.step-body code,
+.step p code {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--gold2);
+  user-select: text;
+}
+
+.snippet {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--gold2);
+  background: rgba(11, 14, 26, 0.7);
+  border-left: 2px solid var(--gold);
+  padding: 8px 10px;
+  margin: 0 0 10px;
+  user-select: text;
+  overflow-x: auto;
+}
+
+.step-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.step-actions.end {
+  justify-content: center;
+}
+
+button.action.compact {
+  padding: 10px 16px;
+  width: auto;
+  font-size: 0.76rem;
+}
+
+.or {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: -6px 0;
+}
+
+.install {
+  margin-bottom: 12px;
+}
+
+.install .meter {
+  margin: 6px 0;
+}
+
+/* Preferences */
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.toggle-row em {
+  display: block;
+  font-style: normal;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.toggle-row input {
+  accent-color: var(--gold);
+  width: 16px;
+  height: 16px;
+  flex: none;
+  cursor: pointer;
+}
+
+/* Retry list */
+
+ul.notes li.attention {
+  align-items: center;
+}
+
+ul.notes li .why {
+  font-family: var(--display);
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+button.retry {
+  background: transparent;
+  border: 1px solid rgba(201, 169, 110, 0.5);
+  color: var(--gold2);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  cursor: pointer;
+  flex: none;
+}
+
+button.retry:hover:not(:disabled) {
+  background: rgba(201, 169, 110, 0.12);
+}
+
+button.retry:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* Setup notice */

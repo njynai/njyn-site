@@ -5,6 +5,21 @@
 const el = (id) => document.getElementById(id);
 
 const ui = {
+  setup: el("setup"),
+  recorder: el("recorder"),
+  envPath: el("env-path"),
+  stepKey: el("step-key"),
+  stepOffline: el("step-offline"),
+  installProgress: el("install-progress"),
+  installStage: el("install-stage"),
+  installBar: el("install-bar"),
+  installDetail: el("install-detail"),
+  installButton: el("install-offline"),
+  installNote: el("install-note"),
+  setupNotice: el("setup-notice"),
+  attentionSection: el("attention-section"),
+  attention: el("attention"),
+  autostart: el("autostart"),
   status: el("status"),
   clock: el("clock"),
   meter: el("meter"),
@@ -19,6 +34,19 @@ const ui = {
   notesEmpty: el("notes-empty"),
   notesDir: el("notes-dir"),
 };
+
+function bytes(n) {
+  if (!n) return "";
+  const mb = n / (1024 * 1024);
+  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
+}
+
+function duration(seconds) {
+  const total = Math.round(seconds || 0);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return m > 0 ? `${m}m ${String(s).padStart(2, "0")}s` : `${s}s`;
+}
 
 function clock(seconds) {
   const total = Math.floor(seconds);
@@ -76,7 +104,100 @@ function renderNotices(state) {
   }
 }
 
+let wasInstalling = false;
+
+/**
+ * The setup screen replaces the recorder until there is something that can
+ * transcribe - or until the user says they will deal with it later.
+ */
+function renderSetup(state) {
+  const cfg = state.config;
+  const showSetup = Boolean(cfg) && !cfg.hasAnyEngine && !state.setupComplete;
+
+  ui.setup.hidden = !showSetup;
+  ui.recorder.hidden = showSetup;
+  if (!showSetup || !cfg) return;
+
+  ui.envPath.textContent = cfg.envPaths[1];
+  ui.stepKey.classList.toggle("done", Boolean(cfg.llmProvider));
+  ui.stepOffline.classList.toggle("done", cfg.localReady);
+
+  const installing = Boolean(state.install);
+  ui.installProgress.hidden = !installing;
+
+  // A 1.5 GB download is worth looking at, and the progress bar sits below the
+  // fold. Scroll to it once, when it starts - not on every frame, which would
+  // fight the user if they scroll away.
+  if (installing && !wasInstalling) {
+    ui.stepOffline.scrollIntoView({ block: "center", behavior: "smooth" });
+  }
+  wasInstalling = installing;
+
+  ui.installButton.disabled = installing || cfg.localReady;
+  ui.installButton.textContent = cfg.localReady
+    ? "Offline mode ready"
+    : installing
+      ? "Downloading…"
+      : "Install offline mode";
+
+  if (installing) {
+    const { stage, percent, received, total } = state.install;
+    ui.installStage.textContent =
+      { model: "Downloading the medium model", binary: "Downloading whisper.cpp", extracting: "Extracting" }[
+        stage
+      ] || "Starting";
+    ui.installBar.style.width = `${percent ?? 0}%`;
+    ui.installDetail.textContent =
+      total && received ? `${bytes(received)} of ${bytes(total)}` : received ? bytes(received) : "";
+  }
+
+  // On platforms with no official prebuilt binary, say so rather than
+  // offering a button that can only fail.
+  ui.installNote.textContent = state.canInstallWhisper
+    ? ""
+    : "On this platform the model downloads but whisper.cpp must be built from source — the README has the four commands.";
+
+  ui.setupNotice.replaceChildren();
+  if (state.lastError) ui.setupNotice.appendChild(notice("error", [state.lastError]));
+}
+
+/** Recordings whose note failed, each with a one-click retry. */
+function renderAttention(state) {
+  const entries = state.needsAttention || [];
+  ui.attentionSection.hidden = entries.length === 0;
+  ui.attention.replaceChildren();
+
+  for (const entry of entries) {
+    const li = document.createElement("li");
+    li.className = "attention";
+
+    const left = document.createElement("span");
+    const name = document.createElement("span");
+    name.textContent = entry.stamp;
+    const why = document.createElement("span");
+    why.className = "why";
+    why.textContent = ` — ${entry.reason} · ${duration(entry.durationSeconds)}`;
+    left.append(name, why);
+
+    const button = document.createElement("button");
+    button.className = "retry";
+    button.textContent = "Retry";
+    button.disabled = state.phase !== "idle";
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      window.njyn.reprocess(entry.stamp);
+    });
+
+    li.append(left, button);
+    ui.attention.appendChild(li);
+  }
+}
+
 function render(state) {
+  renderSetup(state);
+  renderAttention(state);
+  ui.autostart.checked = Boolean(state.startAtLogin);
+
   const recording = state.phase === "recording";
   const processing = state.phase === "processing";
 
@@ -183,6 +304,31 @@ el("reload").addEventListener("click", async () => {
   render(await window.njyn.reloadConfig());
   refreshNotes();
 });
+
+/* ---- setup screen ---- */
+
+el("install-offline").addEventListener("click", () => window.njyn.installOffline("all"));
+el("skip-setup").addEventListener("click", async () => {
+  await window.njyn.completeSetup();
+  render(await window.njyn.getState());
+});
+el("get-groq").addEventListener("click", () =>
+  window.njyn.openExternal("https://console.groq.com/keys"),
+);
+el("get-anthropic").addEventListener("click", () =>
+  window.njyn.openExternal("https://console.anthropic.com/"),
+);
+
+/* ---- preferences ---- */
+
+ui.autostart.addEventListener("change", async (event) => {
+  // The main process reports what the OS actually did, which may differ from
+  // what was asked - so re-render from that rather than trusting the click.
+  const enabled = await window.njyn.setAutostart(event.target.checked);
+  ui.autostart.checked = enabled;
+});
+
+el("reprocess-file").addEventListener("click", () => window.njyn.reprocessFromDisk());
 
 (async () => {
   render(await window.njyn.getState());

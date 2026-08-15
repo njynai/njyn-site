@@ -197,6 +197,8 @@ function buildConfig(appDir) {
     localReady,
     whisperBin,
     whisperModel,
+    /** Which size to fetch if the user asks the app to install one. */
+    whisperModelSize: env.WHISPER_MODEL || "medium",
     whisperLanguage: env.WHISPER_LANGUAGE || "auto",
     whisperThreads: Number(env.WHISPER_THREADS) || 0, // 0 = let whisper decide
 

@@ -23,7 +23,25 @@ summary call. Nothing else leaves the machine — not even a web font.
 
 ## 1. Install
 
-You need [Node.js 18+](https://nodejs.org) to run from source.
+### From an installer
+
+Push a `desktop-v*` tag, or run the **Desktop release** workflow from the
+Actions tab, and GitHub builds the installers on real Windows, macOS and Linux
+runners and attaches them to a draft release.
+
+```
+git tag desktop-v1.0.0 && git push origin desktop-v1.0.0
+```
+
+The installers are **unsigned**, so Windows SmartScreen warns on first run
+(*More info* → *Run anyway*) and macOS needs right-click → *Open*. Removing that
+warning needs a code-signing certificate — around $200/year from a CA — added to
+the workflow as `CSC_LINK` and `CSC_KEY_PASSWORD`. Worth it if other people
+install this; not worth it if it is only you.
+
+### From source
+
+You need [Node.js 18+](https://nodejs.org).
 
 ```
 cd apps/desktop
@@ -31,7 +49,7 @@ npm install
 npm start
 ```
 
-To build an installer:
+To build an installer locally, on the platform you are targeting:
 
 ```
 npm run dist:win     # NSIS installer   -> dist/
@@ -136,6 +154,21 @@ Install whisper.cpp and the medium model, and the app stops sending audio
 anywhere at all. It is picked automatically whenever a binary and a model are
 both present — no configuration needed.
 
+### One click
+
+The setup screen has an **Install offline mode** button. It downloads the
+medium model (~1.5 GB) from the official Hugging Face repo into
+`~/.njyn/models`, and on **Windows** also fetches a prebuilt whisper.cpp from
+the project's GitHub releases into `~/.njyn/whisper.cpp`. The model is
+checked for the ggml magic bytes before it is accepted, so a truncated download
+or an error page cannot masquerade as a working install.
+
+On macOS and Linux there is no official prebuilt CLI, so the button downloads
+the model only and the app says so — build the binary with the four commands
+below and it gets picked up automatically.
+
+### By hand
+
 ```bash
 git clone https://github.com/ggerganov/whisper.cpp ~/whisper.cpp
 cd ~/whisper.cpp
@@ -168,7 +201,33 @@ be written. Record, transcribe and save all work with the network off.
 
 ---
 
-## 5. How it works
+## 5. When something fails
+
+**A failed transcription is recoverable.** If your key was wrong, the network
+dropped, or the provider rate-limited you, the `.wav` is still on disk and the
+note records what went wrong. The app notices, and the panel grows a **Needs
+another go** section listing those recordings with a **Retry** button that
+rebuilds the note from the audio. Nothing is lost but time.
+
+You can also point it at any recording — tray → **Re-process a recording…** —
+including a `.wav` from somewhere else, which gets copied into the notes folder
+so the note and its audio stay together. Retrying is the same code path as a
+live meeting, not a second, less-tested one.
+
+This also makes a useful smoke test: record ten seconds, then retry it as many
+times as you like while you get a key working.
+
+## 6. Start at login
+
+**Preferences → Start at login**, or the tray menu. It launches into the tray
+without opening a window and without recording anything — a recorder you have
+to remember to open is a recorder you forget to use.
+
+Windows and macOS use the OS login-item API. Linux gets a
+`~/.config/autostart/njyn-meeting-notes.desktop` entry. The toggle reflects
+what the OS actually did, not what was asked, so it cannot end up lying to you.
+
+## 7. How it works
 
 | Step | What happens |
 |---|---|
@@ -184,7 +243,7 @@ loopback and again through the microphone.
 
 ---
 
-## 6. Troubleshooting
+## 8. Troubleshooting
 
 **The `SYSTEM AUDIO` chip never lights up.** The platform denied loopback. On
 macOS check Screen & System Audio Recording and restart the app; on Linux check
@@ -193,13 +252,17 @@ that PipeWire and a desktop portal are installed.
 **"whisper.cpp is not installed and no key was found."** Neither path is
 available. Either follow section 4 or put a key in `~/.njyn/.env`.
 
-**The summary says the key was rejected.** The transcript is still in the note.
-Fix the key, then re-run the transcript through your own tooling — or delete the
-`.md`, keep the `.wav`, and record nothing new; the app does not re-process old
-audio.
+**The summary says the key was rejected.** Fix the key, hit **Reload .env**, and
+press **Retry** on that recording in *Needs another go*. See section 5.
 
-**A meeting produced no note.** Recordings under one second are discarded. Check
-the panel for the last error.
+**A meeting produced no note.** Recordings under one second are discarded — the
+audio is deleted too, since a half-second of silence is not worth keeping.
+Anything longer leaves a `.wav` behind that Retry can rebuild. Check the panel
+for the last error.
+
+**The offline install failed.** The model is verified before it is accepted, so
+a bad download deletes itself rather than half-installing. Check disk space
+(1.5 GB) and try again; the button is safe to press twice.
 
 **Where do I find my notes?** Tray → *Open notes folder*, or `~/MeetingNotes`.
 Set `NOTES_DIR` in `.env` to move it.

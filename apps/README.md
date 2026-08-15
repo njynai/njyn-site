@@ -14,7 +14,9 @@ installed, transcription happens entirely on your machine.
 | **Control** | System tray, Start/Stop | Ongoing notification, Start/Stop |
 | **Microphone** | ✅ | ✅ |
 | **System audio** | ✅ loopback | ⚠️ media only — the OS blocks VoIP call audio |
-| **Offline transcription** | ✅ whisper.cpp, medium model | ❌ hosted only |
+| **Offline transcription** | ✅ whisper.cpp, medium model, one-click install | ❌ hosted only |
+| **Retry a failed note** | ✅ rebuilds from the kept audio | ❌ |
+| **Start at login** | ✅ | n/a |
 | **Notes go to** | `~/MeetingNotes` | `Documents/MeetingNotes` |
 
 Both write the identical note format and read the same `.env`, so a meeting

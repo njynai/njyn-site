@@ -1,0 +1,43 @@
+name: Desktop CI
+
+# Runs the self-tests on every change to the desktop app, on the platform it
+# actually ships on.
+on:
+  push:
+    paths:
+      - "apps/desktop/**"
+      - ".github/workflows/desktop-ci.yml"
+  pull_request:
+    paths:
+      - "apps/desktop/**"
+      - ".github/workflows/desktop-ci.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: apps/desktop
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+
+      - run: npm ci
+
+      - name: Self-tests
+        run: npm run selftest
+
+      - name: Icons build from source
+        run: npm run icons

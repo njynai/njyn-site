@@ -49,6 +49,29 @@ function sessionPaths(notesDir, date = new Date()) {
   };
 }
 
+/**
+ * Inverse of stampFor. Returns null for anything that is not one of our names,
+ * so a stray .wav in the folder cannot be mistaken for a meeting.
+ */
+function parseStamp(stamp) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})(?:-\d+)?$/.exec(stamp);
+  if (!match) return null;
+
+  const [, year, month, day, hour, minute] = match.map(Number);
+  const date = new Date(year, month - 1, day, hour, minute);
+
+  // Date silently rolls over out-of-range parts - month 13 becomes January of
+  // the next year - so confirm it round-trips rather than trusting it.
+  const roundTrips =
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day &&
+    date.getHours() === hour &&
+    date.getMinutes() === minute;
+
+  return roundTrips ? date : null;
+}
+
 function formatDuration(seconds) {
   const total = Math.round(seconds);
   const h = Math.floor(total / 3600);
@@ -123,4 +146,11 @@ function writeNote(mdPath, markdown) {
   return mdPath;
 }
 
-module.exports = { sessionPaths, buildMarkdown, writeNote, stampFor, formatDuration };
+module.exports = {
+  sessionPaths,
+  buildMarkdown,
+  writeNote,
+  stampFor,
+  parseStamp,
+  formatDuration,
+};

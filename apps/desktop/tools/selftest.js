@@ -15,8 +15,15 @@ const path = require("path");
 const { WavWriter, readWavInfo, splitWav } = require("../src/main/wav");
 const { stitch } = require("../src/main/transcribe");
 const { renderNotes, extractJson } = require("../src/main/summarize");
-const { sessionPaths, buildMarkdown, stampFor, formatDuration } = require("../src/main/notes");
+const {
+  sessionPaths,
+  buildMarkdown,
+  stampFor,
+  parseStamp,
+  formatDuration,
+} = require("../src/main/notes");
 const { parseEnv, buildConfig } = require("../src/main/config");
+const { scanRecordings } = require("../src/main/pipeline");
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "njyn-selftest-"));
 let passed = 0;
@@ -252,6 +259,102 @@ test("formats durations", () => {
   assert.strictEqual(formatDuration(45), "0m 45s");
   assert.strictEqual(formatDuration(1830), "30m 30s");
   assert.strictEqual(formatDuration(3725), "1h 02m 05s");
+});
+
+console.log("\nrecovery");
+
+/** Build a notes folder with a recording and, optionally, its note. */
+function seedRecording(dir, stamp, note) {
+  fs.mkdirSync(dir, { recursive: true });
+  const w = new WavWriter(path.join(dir, `${stamp}.wav`));
+  w.write(tone(2));
+  w.close();
+  if (note !== undefined) fs.writeFileSync(path.join(dir, `${stamp}.md`), note);
+}
+
+test("parseStamp is the inverse of stampFor", () => {
+  const when = new Date(2026, 7, 15, 14, 30);
+  const parsed = parseStamp(stampFor(when));
+  assert.strictEqual(parsed.getTime(), when.getTime());
+});
+
+test("parseStamp handles the same-minute suffix and rejects junk", () => {
+  assert.strictEqual(parseStamp("2026-08-15-1430-2").getHours(), 14);
+  assert.strictEqual(parseStamp("some-other-recording"), null);
+  assert.strictEqual(parseStamp("2026-13-99-9999"), null);
+});
+
+test("a recording with no note needs attention", () => {
+  const dir = path.join(tmp, "recovery-a");
+  seedRecording(dir, "2026-08-15-1000");
+
+  const found = scanRecordings(dir);
+  assert.strictEqual(found.length, 1);
+  assert.strictEqual(found[0].needsAttention, true);
+  assert.strictEqual(found[0].hasNote, false);
+  assert.match(found[0].reason, /no note/);
+  assert.ok(found[0].durationSeconds > 1.9, "reads the duration off the wav");
+});
+
+test("a note written after a failure needs attention", () => {
+  const dir = path.join(tmp, "recovery-b");
+  seedRecording(
+    dir,
+    "2026-08-15-1100",
+    buildMarkdown({
+      stamp: "2026-08-15-1100",
+      startedAt: new Date(2026, 7, 15, 11, 0),
+      durationSeconds: 120,
+      title: null,
+      summaryMarkdown: "",
+      summaryError: "the API key was rejected",
+      transcript: "kept anyway",
+      transcriptEngine: "failed",
+      llmModel: null,
+      audioFile: "2026-08-15-1100.wav",
+    }),
+  );
+
+  const [found] = scanRecordings(dir);
+  assert.strictEqual(found.needsAttention, true);
+  assert.match(found.reason, /failed/);
+});
+
+test("a good note is left alone", () => {
+  const dir = path.join(tmp, "recovery-c");
+  seedRecording(
+    dir,
+    "2026-08-15-1200",
+    buildMarkdown({
+      stamp: "2026-08-15-1200",
+      startedAt: new Date(2026, 7, 15, 12, 0),
+      durationSeconds: 120,
+      title: "All good",
+      summaryMarkdown: "## Summary\n- it worked",
+      summaryError: null,
+      transcript: "words",
+      transcriptEngine: "whisper.cpp",
+      llmModel: "anthropic/claude-sonnet-5",
+      audioFile: "2026-08-15-1200.wav",
+    }),
+  );
+
+  const [found] = scanRecordings(dir);
+  assert.strictEqual(found.needsAttention, false);
+  assert.strictEqual(found.reason, null);
+});
+
+test("scans newest first and survives a missing folder", () => {
+  const dir = path.join(tmp, "recovery-d");
+  seedRecording(dir, "2026-08-13-0900");
+  seedRecording(dir, "2026-08-15-0900");
+  seedRecording(dir, "2026-08-14-0900");
+
+  assert.deepStrictEqual(
+    scanRecordings(dir).map((entry) => entry.stamp),
+    ["2026-08-15-0900", "2026-08-14-0900", "2026-08-13-0900"],
+  );
+  assert.deepStrictEqual(scanRecordings(path.join(tmp, "does-not-exist")), []);
 });
 
 console.log("\nconfig");

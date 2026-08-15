@@ -28,4 +28,12 @@ contextBridge.exposeInMainWorld("njyn", {
   reloadConfig: () => ipcRenderer.invoke("ui:reloadConfig"),
   recentNotes: () => ipcRenderer.invoke("ui:recentNotes"),
   openPath: (p) => ipcRenderer.invoke("ui:openPath", p),
+
+  /* ---- recovery, setup and preferences ---- */
+  reprocess: (stamp) => ipcRenderer.invoke("ui:reprocess", stamp),
+  reprocessFromDisk: () => ipcRenderer.invoke("ui:reprocessFromDisk"),
+  setAutostart: (enabled) => ipcRenderer.invoke("ui:setAutostart", enabled),
+  installOffline: (what) => ipcRenderer.invoke("ui:installOffline", what),
+  completeSetup: () => ipcRenderer.invoke("ui:completeSetup"),
+  openExternal: (url) => ipcRenderer.invoke("ui:openExternal", url),
 });

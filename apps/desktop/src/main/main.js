@@ -30,10 +30,12 @@ const {
 } = require("electron");
 
 const { buildConfig } = require("./config");
-const { WavWriter } = require("./wav");
-const { transcribe } = require("./transcribe");
-const { summarize } = require("./summarize");
-const { sessionPaths, buildMarkdown, writeNote, formatDuration } = require("./notes");
+const { WavWriter, readWavInfo } = require("./wav");
+const { processAudio, scanRecordings } = require("./pipeline");
+const { sessionPaths, parseStamp, formatDuration } = require("./notes");
+const appSettings = require("./settings");
+const autostart = require("./autostart");
+const setup = require("./setup");
 
 const APP_DIR = path.join(__dirname, "..", "..");
 const ASSETS = path.join(APP_DIR, "assets");
@@ -59,6 +61,8 @@ const state = {
   progress: null, // { stage, percent }
   lastNote: null,
   lastError: null,
+  /** Set while a whisper.cpp / model download is running. */
+  install: null, // { stage, percent, received, total }
 };
 
 let tray = null;
@@ -66,6 +70,7 @@ let captureWin = null;
 let panelWin = null;
 let config = null;
 let tickTimer = null;
+let autostartEnabled = false;
 
 /* ---------------------------------------------------------------- helpers */
 
@@ -99,6 +104,11 @@ function uiState() {
     progress: state.progress,
     lastNote: state.lastNote,
     lastError: state.lastError,
+    install: state.install,
+    startAtLogin: autostartEnabled,
+    canInstallWhisper: setup.canInstallBinary(),
+    needsAttention: needsAttention(),
+    setupComplete: appSettings.read().setupComplete,
     config: config && {
       notesDir: config.notesDir,
       transcribeMode: config.transcribeMode,
@@ -109,8 +119,18 @@ function uiState() {
       llmModel: config.llmModel,
       envPaths: config.envPaths,
       offlineCapable: config.localReady,
+      hasAnyEngine: config.localReady || Boolean(config.keys.groq || config.keys.openai),
     },
   };
+}
+
+/** Recordings whose note is missing or was written after a failure. */
+function needsAttention() {
+  if (!config) return [];
+  return scanRecordings(config.notesDir)
+    .filter((entry) => entry.needsAttention)
+    .slice(0, 5)
+    .map(({ stamp, reason, durationSeconds }) => ({ stamp, reason, durationSeconds }));
 }
 
 function pushUi() {
@@ -158,6 +178,18 @@ function refreshTray() {
     },
     { type: "separator" },
     {
+      label: "Re-process a recording…",
+      enabled: state.phase === "idle",
+      click: () => reprocessFromDisk(),
+    },
+    {
+      label: "Start at login",
+      type: "checkbox",
+      checked: autostartEnabled,
+      click: (item) => setAutostart(item.checked),
+    },
+    { type: "separator" },
+    {
       label: "Reload .env",
       click: () => {
         config = buildConfig(APP_DIR);
@@ -176,6 +208,56 @@ function refreshTray() {
 
 function setPhase(phase) {
   state.phase = phase;
+  refreshTray();
+  pushUi();
+}
+
+/** Writes the preference, then reports back what the OS actually did. */
+function setAutostart(enabled) {
+  autostartEnabled = autostart.setEnabled(enabled);
+  appSettings.write({ startAtLogin: autostartEnabled });
+  refreshTray();
+  pushUi();
+  return autostartEnabled;
+}
+
+/**
+ * Fetch whisper.cpp and the medium model into ~/.njyn.
+ *
+ * @param {"model"|"all"} what
+ */
+async function installOffline(what) {
+  if (state.install) return; // already running
+
+  state.install = { stage: "starting", percent: null };
+  state.lastError = null;
+  pushUi();
+
+  const onProgress = (progress) => {
+    state.install = progress;
+    pushUi();
+  };
+
+  try {
+    if (what === "all" && setup.canInstallBinary()) {
+      await setup.downloadWhisperBinary(onProgress);
+    }
+    await setup.downloadModel(config.whisperModelSize || "medium", onProgress);
+
+    config = buildConfig(APP_DIR);
+    state.install = null;
+    notify(
+      "Offline mode ready",
+      config.localReady
+        ? "whisper.cpp and the medium model are installed. Nothing leaves this machine now."
+        : "The model is installed, but whisper.cpp was not found. See the README.",
+    );
+  } catch (err) {
+    state.install = null;
+    state.lastError = err.message;
+    notify("Offline setup failed", err.message);
+  }
+
   refreshTray();
   pushUi();
 }
@@ -301,90 +383,132 @@ async function processRecording() {
     return;
   }
 
-  setPhase("processing");
-
-  let transcript = "";
-  let transcriptEngine = "unknown";
-  let summaryMarkdown = "";
-  let summaryError = null;
-  let title = null;
-  let llmModel = null;
-
-  try {
-    state.progress = { stage: "Transcribing", percent: 0 };
-    pushUi();
-
-    const result = await transcribe(config, paths.wavPath, (percent) => {
-      state.progress = { stage: "Transcribing", percent };
-      refreshTray();
-      pushUi();
-    });
-    transcript = result.text;
-    transcriptEngine = result.engine;
-  } catch (err) {
-    // Without a transcript there is nothing to summarise, but the audio is
-    // still on disk and the note records why.
-    state.lastError = err.message;
-    transcriptEngine = "failed";
-    summaryError = `transcription failed - ${err.message}`;
-  }
-
-  if (transcript) {
-    try {
-      state.progress = { stage: "Summarising", percent: null };
-      refreshTray();
-      pushUi();
-
-      const summary = await summarize(config, transcript);
-      summaryMarkdown = summary.markdown;
-      title = summary.title;
-      llmModel = summary.model;
-    } catch (err) {
-      summaryError = err.message;
-      state.lastError = err.message;
-    }
-  }
-
-  const markdown = buildMarkdown({
+  await runPipeline({
+    wavPath: paths.wavPath,
+    mdPath: paths.mdPath,
     stamp: paths.stamp,
     startedAt: paths.startedAt,
     durationSeconds,
-    title,
-    summaryMarkdown,
-    summaryError,
-    transcript,
-    transcriptEngine,
-    llmModel,
-    audioFile: config.keepAudio ? path.basename(paths.wavPath) : null,
   });
 
-  writeNote(paths.mdPath, markdown);
-
-  if (!config.keepAudio) {
-    try {
-      fs.unlinkSync(paths.wavPath);
-    } catch {
-      /* already gone */
-    }
-  }
-
-  state.lastNote = {
-    mdPath: paths.mdPath,
-    wavPath: config.keepAudio ? paths.wavPath : null,
-    stamp: paths.stamp,
-    title,
-    durationSeconds,
-    hadError: Boolean(summaryError),
-  };
-  state.progress = null;
   state.session = null;
   state.startedAt = null;
+}
+
+/**
+ * Transcribe, summarise and save. Shared by a meeting that just ended and by a
+ * retry of one that failed, so recovering a recording is the same code path -
+ * not a second, less-tested one.
+ */
+async function runPipeline({ wavPath, mdPath, stamp, startedAt, durationSeconds }) {
+  setPhase("processing");
+  state.lastError = null;
+
+  let result;
+  try {
+    result = await processAudio({
+      config,
+      wavPath,
+      mdPath,
+      stamp,
+      startedAt,
+      durationSeconds,
+      keepAudio: config.keepAudio,
+      onProgress: (stage, percent) => {
+        state.progress = { stage, percent };
+        refreshTray();
+        pushUi();
+      },
+    });
+  } catch (err) {
+    // processAudio handles its own failures; reaching here means the note
+    // could not be written at all, which is the one case worth shouting about.
+    state.lastError = `Could not write the note: ${err.message}`;
+    state.progress = null;
+    setPhase("idle");
+    notify("njyn Meeting Notes", state.lastError);
+    return;
+  }
+
+  if (result.summaryError) state.lastError = result.summaryError;
+
+  state.lastNote = {
+    mdPath: result.mdPath,
+    wavPath: config.keepAudio ? wavPath : null,
+    stamp,
+    title: result.title,
+    durationSeconds,
+    hadError: Boolean(result.summaryError),
+  };
+  state.progress = null;
   setPhase("idle");
 
   notify(
-    summaryError ? "Notes saved with a warning" : "Notes saved",
-    summaryError ? `${paths.stamp}.md — ${summaryError}` : `${paths.stamp}.md`,
+    result.summaryError ? "Notes saved with a warning" : "Notes saved",
+    result.summaryError ? `${stamp}.md — ${result.summaryError}` : `${stamp}.md`,
   );
+}
+
+/**
+ * Run an existing recording through the pipeline again.
+ *
+ * This is the answer to a transcription that died on a bad key or a dropped
+ * connection: the .wav is still there, so the note can simply be rebuilt.
+ */
+async function reprocess(stamp) {
+  if (state.phase !== "idle") return;
+
+  config = buildConfig(APP_DIR);
+  const wavPath = path.join(config.notesDir, `${stamp}.wav`);
+
+  if (!fs.existsSync(wavPath)) {
+    state.lastError = `${stamp}.wav is no longer in ${config.notesDir}.`;
+    pushUi();
+    return;
+  }
+
+  let durationSeconds = 0;
+  try {
+    durationSeconds = readWavInfo(wavPath).durationSeconds;
+  } catch (err) {
+    state.lastError = `${stamp}.wav could not be read: ${err.message}`;
+    pushUi();
+    return;
+  }
+
+  await runPipeline({
+    wavPath,
+    mdPath: path.join(config.notesDir, `${stamp}.md`),
+    stamp,
+    // Fall back to the file's own timestamp if the name is not one of ours.
+    startedAt: parseStamp(stamp) || fs.statSync(wavPath).mtime,
+    durationSeconds,
+  });
+}
+
+/** Pick any .wav from disk and run it through the pipeline. */
+async function reprocessFromDisk() {
+  if (state.phase !== "idle") return;
+
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    title: "Re-process a recording",
+    defaultPath: config.notesDir,
+    filters: [{ name: "Recordings", extensions: ["wav"] }],
+    properties: ["openFile"],
+  });
+  if (canceled || !filePaths.length) return;
+
+  const chosen = filePaths[0];
+  const stamp = path.basename(chosen, ".wav");
+
+  // Recordings kept elsewhere are copied in, so the note and its audio still
+  // end up side by side in the notes folder.
+  const target = path.join(config.notesDir, `${stamp}.wav`);
+  if (path.resolve(chosen) !== path.resolve(target)) {
+    fs.mkdirSync(config.notesDir, { recursive: true });
+    fs.copyFileSync(chosen, target);
+  }
+  await reprocess(stamp);
 }
 
 /* -------------------------------------------------------------------- IPC */
@@ -452,6 +576,20 @@ ipcMain.handle("ui:recentNotes", () => {
     return [];
   }
 });
+ipcMain.handle("ui:reprocess", (_event, stamp) => reprocess(stamp));
+ipcMain.handle("ui:reprocessFromDisk", () => reprocessFromDisk());
+ipcMain.handle("ui:setAutostart", (_event, enabled) => setAutostart(Boolean(enabled)));
+ipcMain.handle("ui:installOffline", (_event, what) => installOffline(what === "all" ? "all" : "model"));
+ipcMain.handle("ui:completeSetup", () => {
+  appSettings.write({ setupComplete: true });
+  pushUi();
+});
+ipcMain.handle("ui:openExternal", (_event, url) => {
+  // Only ever the two documented setup destinations.
+  const allowed = ["https://console.anthropic.com/", "https://console.groq.com/keys"];
+  if (allowed.includes(url)) return shell.openExternal(url);
+  return null;
+});
 ipcMain.handle("ui:openPath", (_event, target) => {
   // Only ever open something inside the notes directory.
   const resolved = path.resolve(target);
@@ -515,6 +653,8 @@ app.whenReady().then(() => {
     { useSystemPicker: false },
   );
 
+  autostartEnabled = autostart.isEnabled();
+
   createCaptureWindow();
   createPanelWindow();
 
@@ -528,9 +668,10 @@ app.whenReady().then(() => {
     console.warn(`Could not register ${TOGGLE_SHORTCUT}; use the tray menu instead.`);
   }
 
-  if (!config.localReady && !config.keys.groq && !config.keys.openai) {
-    showPanel(); // First run with nothing configured: show the setup checklist.
-  }
+  // Show the setup screen on a first run that cannot record anything useful -
+  // but never when the login item started us, since nobody is at the machine.
+  const canWork = config.localReady || config.keys.groq || config.keys.openai;
+  if (!canWork && !autostart.launchedAtLogin()) showPanel();
 });
 
 // Electron quits when the last window closes only if nothing is listening for

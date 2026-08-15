@@ -1,0 +1,93 @@
+name: Desktop release
+
+# Builds the installers on real runners and attaches them to a GitHub release.
+#
+# Tag a release to publish one:
+#     git tag desktop-v1.0.0 && git push origin desktop-v1.0.0
+#
+# Or run it by hand from the Actions tab to get installers as build artifacts
+# without cutting a release.
+on:
+  push:
+    tags:
+      - "desktop-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: apps/desktop
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: dist:win
+            artifact: "*.exe"
+            name: windows
+          - os: macos-latest
+            target: dist:mac
+            artifact: "*.dmg"
+            name: macos
+          - os: ubuntu-latest
+            target: dist:linux
+            artifact: "*.AppImage"
+            name: linux
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+
+      - run: npm ci
+
+      # Never ship an installer that fails its own tests.
+      - name: Self-tests
+        run: npm run selftest
+
+      - name: Build
+        run: npm run ${{ matrix.target }}
+        env:
+          # electron-builder would otherwise try to publish by itself.
+          GH_TOKEN: ""
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: njyn-meeting-notes-${{ matrix.name }}
+          path: apps/desktop/dist/${{ matrix.artifact }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          draft: true
+          body: |
+            njyn Meeting Notes — desktop.
+
+            **The installers are unsigned.** Windows SmartScreen will warn on
+            first run: choose *More info* → *Run anyway*. macOS will need
+            right-click → *Open*. Signing needs a code-signing certificate;
+            see apps/desktop/README.md.
+
+            Setup, permissions and offline mode: apps/desktop/README.md
