@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Signage Player</title>
+  <link rel="stylesheet" href="player.css">
+</head>
+<body>
+  <div id="stage"></div>
+
+  <div id="pairing" class="overlay" hidden>
+    <div class="pairing-card">
+      <p class="pairing-label">Pair this screen</p>
+      <p id="pair-code" class="pair-code">······</p>
+      <p class="pairing-help">Open <strong id="pair-host"></strong>/admin, go to <strong>Screens</strong>,
+        choose <strong>Add screen</strong> and enter this code.</p>
+    </div>
+  </div>
+
+  <div id="idle" class="overlay" hidden>
+    <p id="idle-time" class="idle-time"></p>
+    <p id="idle-name" class="idle-name"></p>
+    <p class="idle-help">Nothing is scheduled for this screen.</p>
+  </div>
+
+  <div id="status" class="status" hidden></div>
+
+  <script type="module" src="player.js"></script>
+</body>
+</html>

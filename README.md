@@ -44,3 +44,11 @@ Product code that ships alongside the site. See [apps/README.md](apps/README.md)
 
 Neither has accounts, cloud storage or telemetry, and neither is part of the
 Astro build.
+
+- `apps/signage` — njyn Signage, self-hosted digital signage (a Yodeck
+  alternative): a Cloudflare Worker with a dashboard for media, playlists,
+  multi-zone layouts and schedules, plus the page the TVs play.
+- `apps/tv-player` — the Android TV / Fire TV app that shows the signage
+  player full-screen and starts on boot.
+
+These two deploy separately from the site; see their READMEs.
