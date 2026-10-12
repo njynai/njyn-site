@@ -1,0 +1,15 @@
+{
+  "name": "njyn-signage",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "db:migrate:local": "wrangler d1 migrations apply signage --local",
+    "db:migrate": "wrangler d1 migrations apply signage --remote",
+    "deploy": "wrangler deploy",
+    "test": "node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "wrangler": "4.145.0"
+  }
+}

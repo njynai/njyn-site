@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pre-API 26 launchers have no adaptive icons: the same mark on the brand colour. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/obsidian" />
+    <item android:drawable="@drawable/ic_launcher_foreground" />
+</layer-list>

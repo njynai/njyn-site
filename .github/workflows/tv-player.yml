@@ -1,0 +1,32 @@
+name: TV player APK
+
+on:
+  push:
+    paths: ["apps/tv-player/**", ".github/workflows/tv-player.yml"]
+  pull_request:
+    paths: ["apps/tv-player/**", ".github/workflows/tv-player.yml"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/tv-player
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      # Set the repository variable SIGNAGE_PLAYER_URL (Settings → Secrets and
+      # variables → Actions → Variables) to bake your server's address into the
+      # APK. Without it the app asks for the address on first launch.
+      - name: Build APK
+        run: ./gradlew --no-daemon assembleRelease -PplayerUrl="${{ vars.SIGNAGE_PLAYER_URL }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: njyn-signage-player
+          path: apps/tv-player/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error

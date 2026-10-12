@@ -1,0 +1,60 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden; background: #000; color: #fff; cursor: none;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+#stage { position: fixed; inset: 0; }
+
+.zone { position: absolute; overflow: hidden; background: #000; }
+.slide {
+  position: absolute; inset: 0; opacity: 0; transition: opacity 600ms ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.slide.shown { opacity: 1; }
+.slide img, .slide video { width: 100%; height: 100%; object-fit: contain; }
+.slide iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+
+.overlay {
+  position: fixed; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; padding: 5vh 5vw;
+  background: radial-gradient(circle at 50% 30%, #1b2333, #05070b);
+}
+.overlay[hidden] { display: none; }
+.pairing-label { font-size: 3vh; letter-spacing: .2em; text-transform: uppercase; opacity: .7; margin: 0; }
+.pair-code {
+  font: 600 16vh/1.1 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: .12em; margin: 3vh 0;
+}
+.pairing-help { font-size: 3.2vh; max-width: 70vw; line-height: 1.5; opacity: .85; margin: 0; }
+.idle-time { font-size: 14vh; font-weight: 300; margin: 0; }
+.idle-name { font-size: 4vh; margin: 2vh 0 0; }
+.idle-help { font-size: 2.6vh; opacity: .6; }
+
+.status {
+  position: fixed; right: 1.5vw; bottom: 1.5vh; padding: .6vh 1.2vw; border-radius: 1vh;
+  background: rgba(0, 0, 0, .6); font-size: 1.8vh; opacity: .8;
+}
+.status[hidden] { display: none; }
+
+/* Widgets. Sizes follow the zone: --zh and --zw are its height and width in px. */
+.w-clock, .w-weather, .w-text {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; padding: 4%;
+}
+.w-clock { background: #0b0f17; }
+.w-clock .time { font-size: min(calc(var(--zh) * .32), calc(var(--zw) * .19)); font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; }
+.w-clock .date { font-size: min(calc(var(--zh) * .09), calc(var(--zw) * .07)); opacity: .75; margin-top: calc(var(--zh) * .04); }
+.w-weather { background: linear-gradient(160deg, #1d4f91, #0b1d3a); }
+.w-weather .place { font-size: min(calc(var(--zh) * .08), calc(var(--zw) * .07)); opacity: .8; }
+.w-weather .now { font-size: min(calc(var(--zh) * .3), calc(var(--zw) * .2)); font-weight: 300; line-height: 1.1; }
+.w-weather .desc { font-size: min(calc(var(--zh) * .08), calc(var(--zw) * .07)); }
+.w-weather .range { font-size: min(calc(var(--zh) * .07), calc(var(--zw) * .06)); opacity: .75; margin-top: calc(var(--zh) * .03); }
+.w-text { white-space: pre-wrap; line-height: 1.25; overflow-wrap: anywhere; }
+.w-ticker {
+  width: 100%; height: 100%; overflow: hidden; display: flex; align-items: center;
+  background: #111; font-size: calc(var(--zh) * .5); white-space: nowrap;
+}
+.w-ticker span { display: inline-block; padding-left: 100%; animation: ticker linear infinite; }
+@keyframes ticker { to { transform: translateX(-100%); } }
