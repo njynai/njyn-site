@@ -22,7 +22,9 @@ const store = {
 
 let manifest = null;
 try { manifest = JSON.parse(store.get('manifest')); } catch {}
-let shown = { layoutId: null, signature: null, zones: [] };
+// layoutId is undefined until something (a layout or the idle screen) has been shown.
+const NOTHING_SHOWN = { layoutId: undefined, signature: null, zones: [] };
+let shown = NOTHING_SHOWN;
 const startedAt = Date.now();
 
 // ---------- server ----------
@@ -133,7 +135,7 @@ function render() {
 
 function stopZones() {
   shown.zones.forEach((z) => z.stop());
-  shown = { layoutId: null, signature: null, zones: [] };
+  shown = NOTHING_SHOWN;
   $('stage').replaceChildren();
 }
 
