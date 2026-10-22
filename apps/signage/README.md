@@ -28,7 +28,53 @@ holds the media. For a handful of screens it fits in Cloudflare's free tier.
   playing through an internet outage and catches up when it's back.
 - **Remote control**: see which screens are online, and reload a player from the dashboard.
 
-## Set it up
+## Set it up from your phone
+
+No computer needed: GitHub does the setup for you. Takes about 10 minutes.
+
+**1. Turn on R2 storage in Cloudflare** (once). In the Cloudflare dashboard open
+**R2 Object Storage** and follow the prompt to enable it. The free tier covers
+10 GB, but Cloudflare asks for a payment method before enabling R2.
+
+**2. Create an API token.** Cloudflare dashboard → your profile icon → **My Profile**
+→ **API Tokens** → **Create Token** → **Create Custom Token**. Give it these
+**Account** permissions, all set to **Edit**:
+
+| Permission | Why |
+|---|---|
+| Workers Scripts | to deploy the Worker |
+| D1 | to create the database |
+| Workers R2 Storage | to create the media bucket |
+
+Under **Account Resources** pick your account, then **Continue to summary** →
+**Create Token**, and copy the token (it is shown only once).
+
+**3. Find your Account ID.** Cloudflare dashboard → **Workers & Pages**: it's in the
+right-hand column (or in the address bar, the long code after `dash.cloudflare.com/`).
+
+**4. Add three secrets on GitHub.** Open the repository → **Settings** → **Secrets and
+variables** → **Actions** → **New repository secret**, once for each:
+
+| Name | Value |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | the token from step 2 |
+| `CLOUDFLARE_ACCOUNT_ID` | the ID from step 3 |
+| `SIGNAGE_ADMIN_PASSWORD` | a password you choose for the dashboard |
+
+**5. Deploy.** Repository → **Actions** → **Deploy signage** → **Run workflow** →
+**Run workflow**. After about two minutes it turns green; open the run and its
+summary shows your dashboard and TV player addresses.
+
+Run it again any time (after updating the code, or to change the password): it
+reuses the same database and media, so nothing is lost.
+
+If it fails, open the red step to see why. The usual causes:
+- the token is missing one of the three permissions (step 2);
+- R2 isn't enabled yet (step 1);
+- the account has no `workers.dev` subdomain yet: open **Workers & Pages** in the
+  Cloudflare dashboard once, choose a subdomain if asked, and run the workflow again.
+
+## Set it up from a computer
 
 You need a Cloudflare account and Node.js 20 or newer.
 
