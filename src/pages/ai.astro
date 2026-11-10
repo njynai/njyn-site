@@ -1,0 +1,456 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Mark from "../components/Mark.astro";
+import { BOOKING_URL, BOOKING_LABEL } from "../config";
+
+const leaks = [
+  { code: "L·01", name: "Copy, paste, retype", blurb: "The same details typed into three systems: forms, CRM, EMR, spreadsheets. Hours every week, and every retype is a chance for an error." },
+  { code: "L·02", name: "Chasing people", blurb: "Reminders, follow-ups, confirmations, unpaid invoices. Work that matters but never needs a human to start it." },
+  { code: "L·03", name: "Reports by hand", blurb: "Pulling numbers from four places every Monday to build the same report. By the time it is done, it is already stale." },
+  { code: "L·04", name: "Documents from scratch", blurb: "Quotes, letters, summaries, policies, and onboarding packs rebuilt every time instead of generated from what you already know." },
+];
+
+const services = [
+  { code: "S·01", name: "Workflow automation", blurb: "We connect the tools you already pay for so data moves on its own: intake to CRM, bookings to billing, forms to records. No retyping, no missed steps.", deliver: "Intake · Data entry · Follow-ups · Handoffs" },
+  { code: "S·02", name: "AI in the daily work", blurb: "AI built into how your team works: drafting replies, triaging inboxes, summarizing calls, answering questions from your own policies and documents.", deliver: "Assistants · Drafting · Triage · Knowledge base" },
+  { code: "S·03", name: "Custom internal tools", blurb: "When off-the-shelf software does not fit, we build lean tools around your process: dashboards, portals, trackers, and calculators your team will actually use.", deliver: "Dashboards · Portals · Trackers · Apps" },
+  { code: "S·04", name: "Reporting on autopilot", blurb: "One source of truth that updates itself. The Monday report arrives on Monday, built from live numbers, with the exceptions flagged.", deliver: "Live dashboards · Scheduled reports · Alerts" },
+  { code: "S·05", name: "Training and adoption", blurb: "Tools only work if people use them. We write the SOPs, train the team, and stay until the new way is simply how work gets done.", deliver: "SOPs · Team training · Change management" },
+];
+
+const phases = [
+  { code: "P·01", name: "Map", blurb: "We sit with the work. Every recurring task is logged with who does it, how long it takes, and where errors creep in. You see exactly where the hours go.", deliver: "Workflow map · Time audit" },
+  { code: "P·02", name: "Prioritize", blurb: "Each opportunity is ranked by hours saved, error risk removed, and effort to build. Quick wins go first so the engagement pays for itself early.", deliver: "Automation roadmap · ROI ranking" },
+  { code: "P·03", name: "Build", blurb: "Automations ship weekly, built on your existing tools wherever possible. Every build is tested against real cases before your team relies on it.", deliver: "Working automations · Weekly releases" },
+  { code: "P·04", name: "Train", blurb: "Your team learns the new workflow with SOPs and hands-on training. We design for the busiest day, not the demo.", deliver: "SOPs · Training sessions" },
+  { code: "P·05", name: "Run and improve", blurb: "We monitor, fix, and extend everything we build. Each month you get the hours saved, the errors avoided, and what we automate next.", deliver: "Monthly impact report · Next-cycle plan" },
+];
+
+const built = [
+  ["Operations", "Staff time clock and leave system", "Clock-ins, timesheets, PTO, sick and lieu balances, and scheduling in one in-house app."],
+  ["Finance", "Payroll timesheet generator", "Recurring payroll timesheets produced in the approved format, ready to send, instead of rebuilt by hand."],
+  ["Surgical", "Facility charge calculator", "OR time, sterilization, supplies, and fees calculated per case into a single, print-ready charge sheet."],
+  ["Patient care", "Recall call tracker", "A shared tracker that turns recall lists into a working call queue with outcomes logged by the team."],
+  ["Marketing", "Campaign intelligence", "Every campaign's spend, leads, and revenue in one ledger, with AI reading the patterns and modelling what to run next."],
+  ["Sales", "Live AI prompt console", "A live tool used on sales calls to show prospects exactly what AI says about their business today."],
+];
+---
+
+<Layout division="ai" path="/ai" title="NJYN AI · Put AI to work inside your business" description="NJYN AI helps businesses incorporate AI into their daily workflows, automate routine processes, and eliminate manual work and errors. A division of NJYN Inc., Toronto.">
+  <!-- HERO -->
+  <header id="top" class="relative z-10 overflow-hidden pt-32 md:pt-40 pb-4 md:pb-8">
+    <div class="heat" aria-hidden="true" style="top:-260px; right:-200px;"></div>
+    <div class="grid md:grid-cols-[1.2fr_0.8fr] items-center gap-8 px-6 md:px-20 lg:px-28 w-full relative z-10">
+      <div class="border-l-2 border-gold pl-6 md:pl-10">
+        <p class="label text-muted mb-6">NJYN AI · A division of NJYN Inc. · Toronto</p>
+        <h1 class="display text-[clamp(2.4rem,6.2vw,5.3rem)]">
+          Put AI to work <span class="serif-accent text-gold2">inside your business.</span>
+        </h1>
+        <p class="mt-8 max-w-[52ch] text-muted text-[clamp(1rem,1.4vw,1.15rem)] leading-relaxed">
+          We find the manual work slowing your team down, then automate it: data entry, intake, follow-ups,
+          reporting, documents. Fewer hours lost, fewer errors, and AI your team actually uses every day.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a href={BOOKING_URL} class="display text-[0.85rem] tracking-[0.04em] bg-gold text-obsidian px-8 py-4 no-underline hover:bg-gold2 transition-colors">{BOOKING_LABEL} &rarr;</a>
+          <a href="#demo" class="display text-[0.85rem] tracking-[0.04em] border border-gold text-gold2 px-8 py-4 no-underline hover:bg-gold hover:text-obsidian transition-colors">Find what to automate &darr;</a>
+        </div>
+      </div>
+      <div class="justify-self-center md:justify-self-end pb-2">
+        <Mark accent="#D4AF6A" animate class="w-[150px] md:w-[230px] h-auto" label="NJYN AI mark" />
+      </div>
+    </div>
+  </header>
+
+  <div class="shimmer-rule relative z-10 mt-12" aria-hidden="true"></div>
+
+  <!-- DEMO: AUTOMATION FINDER -->
+  <section id="demo" class="relative z-10 py-20 md:py-28 scroll-mt-20">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">Automation finder</h2>
+        <span class="label text-gold hidden sm:block">FIG. 01 · Live · Not a mockup</span>
+      </div>
+
+      <div class="grid md:grid-cols-[0.85fr_1.15fr] gap-10 md:gap-14 items-start">
+        <div class="rev">
+          <p class="serif-accent text-[clamp(1.4rem,2.4vw,2rem)] leading-snug mb-6 text-txt">
+            Describe one task your team does by hand. See how it runs on its own.
+          </p>
+          <p class="text-muted text-[0.95rem] leading-relaxed max-w-[46ch]">
+            A live AI model drafts an automation plan for your task: how it would work, the tools involved,
+            the errors it removes, and a conservative estimate of the hours your team gets back each week.
+          </p>
+          <div class="label text-muted mt-8 mb-3">Try one</div>
+          <div class="flex flex-wrap gap-2.5" id="demo-suggestions">
+            <button data-i="Medical clinic" data-q="Front desk retypes new patient intake forms from paper and email into our EMR, then emails the patient their pre-appointment instructions." class="label text-muted border border-gold/25 px-3.5 py-2 hover:border-gold hover:text-txt transition-colors cursor-pointer bg-transparent text-left">Patient intake into the EMR</button>
+            <button data-i="Small business" data-q="Every Monday our manager pulls sales from the POS, ad spend from three platforms, and leads from the CRM into Excel to build the weekly report." class="label text-muted border border-gold/25 px-3.5 py-2 hover:border-gold hover:text-txt transition-colors cursor-pointer bg-transparent text-left">The weekly sales report</button>
+            <button data-i="Services firm" data-q="We chase unpaid invoices by checking QuickBooks every few days and sending reminder emails one by one." class="label text-muted border border-gold/25 px-3.5 py-2 hover:border-gold hover:text-txt transition-colors cursor-pointer bg-transparent text-left">Chasing unpaid invoices</button>
+          </div>
+        </div>
+
+        <div class="rev brackets bg-[#141A27] border border-gold/25 glow-pulse">
+          <div class="label text-muted border-b border-gold/20 px-5 py-3.5 flex justify-between items-center">
+            <span class="flex items-center gap-2.5"><span class="live-dot"></span>NJYN // automation finder · LIVE</span>
+            <span class="text-gold" id="demo-status">Ready</span>
+          </div>
+          <div class="p-5">
+            <div class="label text-muted mb-1.5" style="font-size:.6rem">The task your team does by hand</div>
+            <textarea id="demo-task" rows="3" maxlength="600" placeholder="e.g. We copy every booking from email into our calendar and then into the billing system."
+              class="w-full bg-obsidian/60 border border-gold/40 px-4 py-3.5 text-txt placeholder-muted font-mono text-[0.92rem] leading-relaxed focus:border-gold focus:outline-none resize-y"></textarea>
+            <div class="grid gap-3 md:grid-cols-[1fr_auto] mt-3 items-end">
+              <div>
+                <div class="label text-muted mb-1.5" style="font-size:.6rem">Industry or team (optional)</div>
+                <input id="demo-ind" type="text" maxlength="80" placeholder="e.g. Dental clinic, accounting firm, retail"
+                  class="w-full bg-obsidian/60 border border-gold/40 px-4 py-3.5 text-txt placeholder-muted font-mono text-[0.92rem] focus:border-gold focus:outline-none" />
+              </div>
+              <button id="demo-run" class="display text-[0.85rem] tracking-[0.04em] bg-gold text-obsidian px-8 py-4 hover:bg-gold2 transition-colors cursor-pointer">Find the automation</button>
+            </div>
+            <div id="demo-out" class="mt-5 border-t border-gold/15 pt-5 min-h-[160px]">
+              <div class="terminal-out text-muted"><span class="text-gold">&gt;</span> Awaiting a task<span class="cursor-blink">_</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rev mt-10 flex flex-wrap items-center justify-between gap-5 border border-gold/25 px-6 md:px-8 py-5">
+        <p class="label text-muted">Estimates are illustrations. Real numbers come from mapping your actual workflow.</p>
+        <a href={BOOKING_URL} class="display text-[0.78rem] tracking-[0.04em] text-gold2 no-underline border-b-2 border-gold pb-1 hover:text-txt transition-colors">Map yours on a call &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHERE THE HOURS GO -->
+  <section id="leaks" class="relative z-10 pb-20 md:pb-28">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">Where the hours go</h2>
+        <span class="label text-muted hidden sm:block">FIG. 02 · Four leaks in every business</span>
+      </div>
+      <p class="rev serif-accent text-[clamp(1.4rem,2.6vw,2.1rem)] max-w-[40ch] leading-snug mb-12 text-txt">
+        Your team is not slow. They are doing work a machine should be doing.
+      </p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-gold/20 border border-gold/25">
+        {leaks.map((l) => (
+          <div class="rev bg-obsidian2 p-7 md:p-8">
+            <div class="label text-gold mb-5">{l.code}</div>
+            <h3 class="display text-[1.25rem] tracking-[0.02em] mb-3">{l.name}</h3>
+            <p class="text-muted text-[0.92rem] leading-relaxed">{l.blurb}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="system" class="relative z-10 pb-20 md:pb-28">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">What we build</h2>
+        <span class="label text-muted hidden sm:block">FIG. 03 · Five services, one engagement</span>
+      </div>
+      <div class="border-t border-gold/25">
+        {services.map((s) => (
+          <div class="rev grid md:grid-cols-[110px_1fr_1.5fr] gap-3 md:gap-12 items-baseline border-b border-gold/25 py-8 md:py-10 hover:bg-obsidian2 transition-colors">
+            <span class="label text-muted">{s.code}</span>
+            <h3 class="display text-[clamp(1.5rem,3vw,2.4rem)]">{s.name}</h3>
+            <div>
+              <p class="text-muted text-[0.97rem] leading-relaxed max-w-[58ch] mb-4">{s.blurb}</p>
+              <p class="label text-gold">{s.deliver}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="rev mt-8 grid md:grid-cols-[110px_1fr_1.5fr] gap-3 md:gap-12 items-baseline border border-gold/25 px-6 py-6">
+        <span class="label text-gold">Add-on</span>
+        <h3 class="display text-[1.2rem] tracking-[0.02em]">AI search visibility</h3>
+        <p class="text-muted text-[0.94rem] leading-relaxed max-w-[58ch]">
+          When customers ask ChatGPT, Claude, Perplexity, or Google AI who to hire, we work to put your business in the
+          answer and track it monthly. Available on any engagement.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process" class="relative z-10 pb-20 md:pb-28">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">How it works</h2>
+        <span class="label text-muted hidden sm:block">FIG. 04 · Map, prioritize, build, train, run</span>
+      </div>
+      <p class="rev serif-accent text-[clamp(1.4rem,2.4vw,2rem)] max-w-[42ch] leading-snug mb-12 text-txt">
+        We do not start with AI. We start with your work, and bring AI in where it removes real effort.
+      </p>
+      <div class="border-t border-gold/25">
+        {phases.map((p) => (
+          <div class="rev grid md:grid-cols-[110px_1fr_1.5fr] gap-3 md:gap-12 items-baseline border-b border-gold/25 py-8 md:py-10 hover:bg-obsidian2 transition-colors">
+            <span class="label text-muted">{p.code}</span>
+            <h3 class="display text-[clamp(1.5rem,3vw,2.4rem)]">{p.name}</h3>
+            <div>
+              <p class="text-muted text-[0.97rem] leading-relaxed max-w-[58ch] mb-4">{p.blurb}</p>
+              <p class="label text-gold">{p.deliver}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVING GROUND -->
+  <section id="built" class="relative z-10 pb-20 md:pb-28">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">Built in live operations</h2>
+        <span class="label text-muted hidden sm:block">FIG. 05 · Running today</span>
+      </div>
+      <p class="rev serif-accent text-[clamp(1.4rem,2.4vw,2rem)] max-w-[42ch] leading-snug mb-12 text-txt">
+        We do not test on clients. These systems run inside busy healthcare operations every day.
+      </p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-gold/20 border border-gold/25">
+        {built.map(([tag, name, line]) => (
+          <div class="rev bg-obsidian2 p-7">
+            <div class="label text-gold mb-4">{tag}</div>
+            <h3 class="display text-[1.1rem] tracking-[0.02em] mb-2.5">{name}</h3>
+            <p class="text-muted text-[0.9rem] leading-relaxed">{line}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="operator" class="relative z-10 pb-20 md:pb-32">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-gold/25 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">The team</h2>
+        <span class="label text-muted hidden sm:block">FIG. 05 · Led by Jason Trinh · Curated specialists</span>
+      </div>
+
+      <div class="grid md:grid-cols-[1fr_3fr] gap-10 md:gap-16 md:items-stretch">
+        <div class="rev brackets max-w-[340px] md:max-w-none flex flex-col md:min-h-0">
+          <div class="md:flex-1 md:min-h-0 md:relative">
+            <img src="/images/jason.jpg" alt="Jason Trinh, founder of NJYN Inc." class="block w-full md:absolute md:inset-0 md:h-full md:object-cover md:object-center" loading="lazy" />
+          </div>
+          <div class="label text-muted flex justify-between border border-t-0 border-gold/25 px-4 py-3">
+            <span>J. Trinh</span>
+            <span class="text-gold">Founder · Lead</span>
+          </div>
+        </div>
+        <div class="rev">
+          <p class="serif-accent text-[clamp(1.5rem,2.8vw,2.3rem)] leading-snug mb-6 text-txt">
+            NJYN AI is led by Jason Trinh, with a curated team of proven industry experts.
+          </p>
+          <div class="grid md:grid-cols-[auto_1fr] gap-8 md:gap-6 mb-10 md:items-stretch">
+            <div>
+              <p class="text-muted leading-relaxed max-w-[52ch] mb-5">
+                I've spent over eight years in surgical business development and
+                management, and I currently run the business operations of two live
+                healthcare facilities in Toronto. Before that, four years building
+                medical spa businesses when they were first gaining traction in this
+                city. The playbook that shaped today's Toronto market? I helped lay
+                those foundations.
+              </p>
+              <p class="text-muted leading-relaxed max-w-[52ch] mb-5">
+                Underneath it all sits more than a decade of training and development:
+                building teams, coaching people, and running successful retail sales
+                businesses. I know what it takes to make a front desk convert, a team
+                perform, and an operation hold its standards when it gets busy.
+              </p>
+              <p class="text-muted leading-relaxed max-w-[52ch]">
+                Every engagement is led by me and delivered with specialists I have
+                personally vetted and worked with: automation engineers, AI integration
+                specialists, data and reporting builders, and trainers, brought in
+                exactly when a phase calls for them. You get a full bench
+                of proven experts and still one direct line: mine. No account
+                managers, no juniors learning on your budget.
+              </p>
+            </div>
+
+            <div class="brackets border border-gold/25 bg-obsidian2 divide-y divide-gold/15 md:flex md:flex-col md:h-full">
+              {
+                [
+                  ["8+", "Years in surgical business development & management"],
+                  ["4", "Years building Toronto's early medical spa market"],
+                  ["10+", "Years in training, team building & retail sales leadership"],
+                ].map(([n, t]) => (
+                  <div class="px-5 py-5 md:px-6 md:py-6 md:flex-1 md:flex md:flex-col md:justify-center">
+                    <div class="display text-[clamp(1.8rem,3vw,2.6rem)] text-gold mb-1.5">{n}</div>
+                    <div class="label text-muted leading-relaxed">{t}</div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+
+          <dl class="border-t border-gold/25">
+            {
+              [
+                ["Base", "Toronto, Canada"],
+                ["Operates", "FORM Face + Body · Toronto Outpatient Surgery Centre"],
+                ["Discipline", "AI integration, workflow automation, operations"],
+                ["Direct line", "jasontrinh.com"],
+              ].map(([k, v]) => (
+                <div class="grid grid-cols-[110px_1fr] md:grid-cols-[140px_1fr] gap-4 border-b border-gold/15 py-4 items-baseline">
+                  <dt class="label text-muted">{k}</dt>
+                  <dd class="text-txt text-[0.95rem]">
+                    {v === "jasontrinh.com" ? (
+                      <a href="https://jasontrinh.com" class="text-gold2 no-underline border-b border-gold/40 pb-0.5 hover:text-txt transition-colors">
+                        jasontrinh.com &#8599;
+                      </a>
+                    ) : (
+                      v
+                    )}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="relative z-10 border-t border-gold/25 py-24 md:py-32 overflow-hidden">
+    <div class="heat" aria-hidden="true" style="bottom:-300px; left:-240px;"></div>
+    <div class="px-6 md:px-20 lg:px-28 relative z-10 grid md:grid-cols-[auto_1fr] md:gap-12 gap-10 md:items-stretch">
+      <div class="md:flex md:flex-col md:justify-between">
+        <div class="rev max-w-[22ch]">
+          <h2 class="display text-[clamp(2rem,4.4vw,3.9rem)]">
+            Stop doing it by hand.<br /><span class="serif-accent text-gold2">Start this week.</span>
+          </h2>
+        </div>
+        <div class="rev mt-10 flex flex-wrap items-center gap-6">
+          <a href={BOOKING_URL} class="display text-[0.9rem] tracking-[0.04em] bg-gold text-obsidian px-10 py-5 no-underline hover:bg-gold2 transition-colors">{BOOKING_LABEL} &rarr;</a>
+          <div class="label text-muted">
+            30 minutes · We map one workflow live<br />
+            $3,000 to $5,000 per month · Month to month · Limited seats
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-5 md:space-y-0 md:flex md:flex-col md:justify-between md:gap-5 md:justify-self-stretch">
+        <div class="rev brackets bg-obsidian2 border border-gold/25">
+          <div class="label text-muted border-b border-gold/20 px-5 py-3.5 flex justify-between">
+            <span>NJYN // the call</span>
+            <span class="text-gold flex items-center gap-2"><span class="inline-block w-2 h-2 bg-gold rounded-full core"></span>30 min</span>
+          </div>
+          <div class="divide-y divide-gold/15">
+            {[
+              ["00-10", "Walk us through one manual workflow your team would happily never do again"],
+              ["10-20", "We map where automation and AI fit, and the hours and errors at stake"],
+              ["20-30", "A clear first build and whether NJYN AI fits. If it doesn't, we'll say so"],
+            ].map(([t, d]) => (
+              <div class="grid grid-cols-[64px_1fr] gap-4 px-5 py-5 items-baseline">
+                <span class="label text-gold">{t}</span>
+                <span class="text-muted text-[0.92rem] leading-relaxed">{d}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="rev border border-gold/25 bg-obsidian2">
+          <div class="label text-muted border-b border-gold/20 px-5 py-3.5">From manual to automatic</div>
+          <div class="divide-y divide-gold/15">
+            {[
+              ["P·01", "Map", "Find where the hours go"],
+              ["P·02", "Prioritize", "Quick wins first, ranked by ROI"],
+              ["P·03", "Build", "Weekly releases on your tools"],
+              ["P·04", "Train", "SOPs and hands-on training"],
+              ["P·05", "Run", "Hours saved, reported monthly"],
+            ].map(([c, n, d]) => (
+              <div class="grid grid-cols-[52px_150px_1fr] gap-4 px-5 py-3.5 items-baseline">
+                <span class="label text-gold">{c}</span>
+                <span class="display text-[0.85rem] tracking-[0.03em]">{n}</span>
+                <span class="text-muted text-[0.8rem] leading-relaxed">{d}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const task = document.getElementById("demo-task") as HTMLTextAreaElement;
+    const ind = document.getElementById("demo-ind") as HTMLInputElement;
+    const run = document.getElementById("demo-run") as HTMLButtonElement;
+    const out = document.getElementById("demo-out") as HTMLElement;
+    const status = document.getElementById("demo-status") as HTMLElement;
+
+    const SYS =
+      "You are the automation architect at NJYN AI, a Toronto firm that helps businesses incorporate AI into daily workflows, automate routine processes, and eliminate manual work and errors. A visitor describes a task their team does by hand. Design a realistic automation for it. Be practical and conservative: prefer tools a small business already has or can adopt (Microsoft 365 and Power Automate, Google Workspace and Apps Script, Zapier or Make, the business's existing CRM, EMR, POS or accounting software and their integrations, and an LLM such as Claude for reading, drafting, classifying, or summarizing). Never promise guaranteed results. If the task touches patient or client health information, include one short privacy note about consent and Canadian privacy law (PHIPA or PIPEDA) and keeping data in approved systems. Respond with ONLY a JSON object, no markdown, in exactly this shape: {\"title\":\"short name of the automation, max 6 words\",\"summary\":\"one sentence on what changes for the team\",\"steps\":[\"3 to 5 short steps describing how the automated workflow runs\"],\"tools\":[\"2 to 5 tool names\"],\"hours_low\":number,\"hours_high\":number,\"errors_removed\":\"one sentence naming the specific errors this removes\",\"complexity\":\"Low\" or \"Medium\" or \"High\",\"first_win\":\"one sentence describing the smallest version that could ship in the first week\",\"privacy_note\":\"string or empty string\"} hours_low and hours_high are a conservative estimate of staff hours saved per week for a typical small team. Keep every string under 220 characters.";
+
+    const esc = (s: any) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+
+    function parsePlan(text: string) {
+      const s = text.indexOf("{"), e = text.lastIndexOf("}");
+      if (s < 0 || e <= s) return null;
+      try { const p = JSON.parse(text.slice(s, e + 1)); return p && Array.isArray(p.steps) ? p : null; } catch { return null; }
+    }
+
+    async function getPlan(t: string, i: string) {
+      try {
+        const r = await fetch("/api/automate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task: t, industry: i }) });
+        if (r.ok) { const d = await r.json(); if (d.plan) return d.plan; }
+      } catch {}
+      try {
+        const r = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 900, system: SYS,
+            messages: [{ role: "user", content: (i ? `Industry or team: ${i}\n` : "") + `Manual task: ${t}` }] }),
+        });
+        if (r.ok) {
+          const d = await r.json();
+          const text = (d.content || []).filter((b: any) => b.type === "text").map((b: any) => b.text).join("\n");
+          const p = parsePlan(text); if (p) return p;
+        }
+      } catch {}
+      return null;
+    }
+
+    function render(p: any) {
+      const lo = Math.max(0, Math.round(Number(p.hours_low) || 0)), hi = Math.max(lo, Math.round(Number(p.hours_high) || 0));
+      const cx = ["Low", "Medium", "High"].includes(p.complexity) ? p.complexity : "Medium";
+      const cxCol = cx === "Low" ? "#3AD07A" : cx === "Medium" ? "#D4AF6A" : "#E86A5A";
+      out.innerHTML = `
+        <div class="grid sm:grid-cols-[1fr_auto] gap-4 items-start mb-5">
+          <div>
+            <div class="label text-gold mb-1.5">Automation plan</div>
+            <div class="display text-[1.25rem] tracking-[0.02em] text-txt">${esc(p.title)}</div>
+            <p class="text-muted text-[0.9rem] leading-relaxed mt-2">${esc(p.summary)}</p>
+          </div>
+          <div class="border border-gold/40 px-4 py-3 text-center min-w-[120px] justify-self-start sm:justify-self-auto">
+            <div class="display text-[1.6rem] text-gold">${lo}-${hi}</div>
+            <div class="label text-muted" style="font-size:.56rem">hours back / week</div>
+          </div>
+        </div>
+        <div class="label text-muted mb-2">How it runs</div>
+        <ol class="mb-5">${(p.steps || []).slice(0, 5).map((s: string, i: number) =>
+          `<li class="grid grid-cols-[34px_1fr] gap-2 py-2 border-b border-gold/10 text-[0.9rem] text-txt leading-relaxed"><span class="label text-gold pt-0.5">0${i + 1}</span><span>${esc(s)}</span></li>`).join("")}</ol>
+        <div class="flex flex-wrap gap-2 mb-5">${(p.tools || []).slice(0, 5).map((t: string) => `<span class="label border border-gold/30 text-gold2 px-3 py-1.5">${esc(t)}</span>`).join("")}
+          <span class="label border px-3 py-1.5" style="border-color:${cxCol};color:${cxCol}">Complexity · ${cx}</span></div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="border border-gold/20 p-4"><div class="label text-gold mb-1.5">Errors removed</div><p class="text-muted text-[0.86rem] leading-relaxed">${esc(p.errors_removed)}</p></div>
+          <div class="border border-gold/20 p-4"><div class="label text-gold mb-1.5">First win, week one</div><p class="text-muted text-[0.86rem] leading-relaxed">${esc(p.first_win)}</p></div>
+        </div>
+        ${p.privacy_note ? `<p class="label text-muted mt-4 leading-relaxed" style="letter-spacing:.08em">Privacy · ${esc(p.privacy_note)}</p>` : ""}`;
+      out.animate?.([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 400, easing: "ease-out" });
+    }
+
+    async function go() {
+      const t = task.value.trim();
+      if (t.length < 8) { task.focus(); return; }
+      run.disabled = true; status.textContent = "Running...";
+      out.innerHTML = '<div class="terminal-out text-muted"><span class="text-gold">&gt;</span> Mapping the workflow and designing the automation<span class="cursor-blink">_</span></div>';
+      const p = await getPlan(t, ind.value.trim());
+      if (p) render(p);
+      else out.innerHTML = '<div class="terminal-out text-muted"><span class="text-gold">&gt;</span> The live engine is unavailable right now. Book a call and we will map this one with you.</div>';
+      run.disabled = false; status.textContent = "Ready";
+    }
+
+    run.addEventListener("click", go);
+    task.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) go(); });
+    document.querySelectorAll("#demo-suggestions button").forEach((b) => b.addEventListener("click", () => {
+      task.value = (b as HTMLElement).dataset.q || ""; ind.value = (b as HTMLElement).dataset.i || ""; go();
+    }));
+  </script>
+</Layout>
