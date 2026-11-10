@@ -25,6 +25,7 @@ export async function onRequestPost(context) {
   }
 
   const prompt = (body.prompt || "").toString().trim().slice(0, 300);
+  const business = (body.business || "").toString().trim().slice(0, 120);
   if (!prompt) {
     return json({ error: "Empty prompt" }, 400);
   }
@@ -43,7 +44,10 @@ export async function onRequestPost(context) {
         "You are a consumer AI assistant being asked for a recommendation. " +
         "Answer the question directly and name specific businesses or providers with a one-line reason each, " +
         "the way an AI assistant would for a real consumer. Use web search to ground your answer. " +
-        "Keep the whole answer under 180 words. Plain text only, no markdown formatting.",
+        "Keep the answer under 180 words. Plain text only, no markdown formatting. " +
+        "After the answer, output exactly one final line in this format and nothing after it: " +
+        'RECOMMENDED: ["Business Name 1","Business Name 2"] ' +
+        "listing every specific business or provider you recommended, in order.",
       messages: [{ role: "user", content: prompt }],
       tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }],
     }),
@@ -60,7 +64,23 @@ export async function onRequestPost(context) {
     .join("\n")
     .trim();
 
-  return json({ text });
+  // Split the structured trailer from the prose answer
+  let answer = text;
+  let recommended = [];
+  const m = text.match(/RECOMMENDED:\s*(\[[\s\S]*\])\s*$/);
+  if (m) {
+    try { recommended = JSON.parse(m[1]); } catch {}
+    answer = text.slice(0, m.index).trim();
+  }
+  let inAnswer = null;
+  if (business) {
+    const norm = (x) => x.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const b = norm(business);
+    inAnswer =
+      recommended.some((r) => norm(String(r)).includes(b) || b.includes(norm(String(r)))) ||
+      norm(answer).includes(b);
+  }
+  return json({ text: answer, recommended, inAnswer });
 }
 
 function json(obj, status = 200) {

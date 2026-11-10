@@ -1,169 +1,91 @@
 @import "tailwindcss";
 
 @theme {
-  --color-obsidian: #0B0E1A;
-  --color-obsidian2: #10141F;
-  --color-gold: #C9A96E;
-  --color-gold2: #E2C99A;
-  --color-royal: #4B0082;
-  --color-txt: #E8E4F0;
-  --color-muted: #9B94B0;
+  --color-obsidian: #07090F;
+  --color-obsidian2: #0E121C;
+  --color-panel: #151B28;
+  --color-txt: #F2EEE6;
+  --color-muted: #A3A8B4;
+  --color-graphite: #8A8F9C;
+  --color-gold: #D4AF6A;
+  --color-gold2: #E6CB94;
+  --color-ember: #FF4A26;
+  --color-ember2: #FF8466;
 
-  --font-display: "Archivo", sans-serif;
+  --font-display: "Archivo Black", sans-serif;
   --font-serif-accent: "Instrument Serif", serif;
   --font-mono: "IBM Plex Mono", monospace;
+  --font-body: "Inter", sans-serif;
 }
 
 html { scroll-behavior: smooth; }
-
 body {
   background: var(--color-obsidian);
   color: var(--color-txt);
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+::selection { background: var(--accent, var(--color-gold)); color: var(--color-obsidian); }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent, var(--color-gold)); outline-offset: 3px; }
 
-::selection { background: var(--color-gold); color: var(--color-obsidian); }
+.display { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; letter-spacing: -0.01em; line-height: 0.95; }
+.serif-accent { font-family: var(--font-serif-accent); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; }
+.label { font-family: var(--font-mono); font-weight: 500; font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; }
 
-a:focus-visible, button:focus-visible, input:focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 3px;
-}
-
-.display {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-stretch: 120%;
-  text-transform: uppercase;
-  letter-spacing: -0.02em;
-  line-height: 0.94;
-}
-
-.serif-accent {
-  font-family: var(--font-serif-accent);
-  font-style: italic;
-  font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-.label {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-/* Faint scanlines across the whole page */
 .scanlines {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 3px,
-    rgba(232, 228, 240, 0.012) 3px,
-    rgba(232, 228, 240, 0.012) 4px
-  );
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(242,238,230,.014) 3px, rgba(242,238,230,.014) 4px);
+}
+/* Division heat: a single soft glow in the division colour, never two */
+.heat {
+  position: absolute; width: 640px; height: 640px; border-radius: 9999px; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent, #D4AF6A) 16%, transparent), transparent 65%);
 }
 
-/* Royal purple orb, top right, very restrained */
-.orb {
-  position: absolute;
-  top: -180px;
-  right: -180px;
-  width: 520px;
-  height: 520px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(75, 0, 130, 0.28), transparent 65%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Gold shimmer rule */
 .shimmer-rule {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 5s linear infinite;
-  opacity: 0.7;
+  background: linear-gradient(90deg, transparent, var(--accent, #D4AF6A), transparent);
+  background-size: 200% 100%; animation: shimmer 5s linear infinite; opacity: .7;
 }
-@keyframes shimmer {
-  to { background-position: -200% 0; }
-}
+@keyframes shimmer { to { background-position: -200% 0; } }
 
-/* Corner brackets */
 .brackets { position: relative; }
-.brackets::before,
-.brackets::after {
-  content: "";
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border: 1px solid var(--color-gold);
-  opacity: 0.75;
-}
+.brackets::before, .brackets::after { content: ""; position: absolute; width: 18px; height: 18px; border: 1px solid var(--accent, #D4AF6A); opacity: .75; }
 .brackets::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
 .brackets::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
 
-/* Engine logo animation */
-.ring-outer { transform-origin: center; animation: spin 24s linear infinite; }
-.ring-inner { transform-origin: center; animation: spin-rev 16s linear infinite; }
-.core { transform-origin: center; animation: ignite 2.6s ease-in-out infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes spin-rev { to { transform: rotate(-360deg); } }
-@keyframes ignite {
-  0%, 100% { opacity: 0.75; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.12); }
-}
+/* Mark: the chassis settles onto the N on load */
+.mark-anim .m-roof { animation: roofIn 1.1s cubic-bezier(.2,.9,.25,1.15) .25s both; }
+.mark-anim .m-floor { animation: floorIn 1.1s cubic-bezier(.2,.9,.25,1.15) .25s both; }
+.mark-anim .m-n { animation: nIn .9s cubic-bezier(.16,1,.3,1) both; transform-origin: center; transform-box: fill-box; }
+@keyframes roofIn { from { transform: translateY(-34px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes floorIn { from { transform: translateY(34px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes nIn { from { transform: scaleY(0); opacity: .4; } to { transform: none; opacity: 1; } }
+.core { animation: ignite 2.6s ease-in-out infinite; }
+@keyframes ignite { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
 
-/* Demo terminal */
-.terminal-out {
-  font-family: var(--font-mono);
-  font-size: 0.86rem;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
+.terminal-out { font-family: var(--font-mono); font-size: .86rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
 .cursor-blink { animation: blink 1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
-/* Scroll reveal */
-.rev {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.8s cubic-bezier(0.2, 0.6, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.6, 0.2, 1);
+.glow-pulse { box-shadow: 0 0 0 1px rgba(212,175,106,.35), 0 0 34px rgba(212,175,106,.10); animation: glow 3s ease-in-out infinite; }
+@keyframes glow {
+  0%,100% { box-shadow: 0 0 0 1px rgba(212,175,106,.35), 0 0 26px rgba(212,175,106,.08); }
+  50% { box-shadow: 0 0 0 1px rgba(212,175,106,.6), 0 0 52px rgba(212,175,106,.22); }
 }
+.live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: #3AD07A; box-shadow: 0 0 10px rgba(58,208,122,.8); animation: ignite 1.6s ease-in-out infinite; }
+
+/* Division cards on the parent page */
+.div-card { transition: border-color .3s, background .3s; }
+.div-card .arrow { transition: transform .3s; }
+.div-card:hover .arrow { transform: translateX(6px); }
+
+.rev { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2,.6,.2,1), transform .8s cubic-bezier(.2,.6,.2,1); }
 .rev.in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .rev { opacity: 1; transform: none; transition: none; }
-  .ring-outer, .ring-inner, .core, .shimmer-rule, .cursor-blink { animation: none; }
-}
-
-/* Attention glow for the live demo console */
-.glow-pulse {
-  box-shadow: 0 0 0 1px rgba(201, 169, 110, 0.35), 0 0 34px rgba(201, 169, 110, 0.10);
-  animation: glow 3s ease-in-out infinite;
-}
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(201, 169, 110, 0.35), 0 0 26px rgba(201, 169, 110, 0.08); }
-  50% { box-shadow: 0 0 0 1px rgba(201, 169, 110, 0.6), 0 0 52px rgba(201, 169, 110, 0.22); }
-}
-.live-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  background: #3AD07A;
-  box-shadow: 0 0 10px rgba(58, 208, 122, 0.8);
-  animation: ignite 1.6s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .glow-pulse { animation: none; }
-  .live-dot { animation: none; }
+  .shimmer-rule, .core, .cursor-blink, .glow-pulse, .live-dot, .mark-anim * { animation: none !important; }
 }

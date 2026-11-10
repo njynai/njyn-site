@@ -1,3 +1,5 @@
-// The one CTA. Swap for Calendly / Cal.com when ready.
-export const BOOKING_URL = "mailto:hello@njyn.ai?subject=Book%20a%20call";
+// One CTA per division. Swap BOOKING_URL for a Cal.com / Calendly link when ready.
+export const EMAIL = "jason@njyn.ai";
+export const BOOKING_URL = "mailto:jason@njyn.ai?subject=NJYN%20AI%20%C2%B7%20Book%20a%20call";
 export const BOOKING_LABEL = "Book a call";
+export const STUDIO_URL = "mailto:jason@njyn.ai?subject=NJYN%20Studio";

@@ -1,0 +1,138 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Mark from "../components/Mark.astro";
+import { STUDIO_URL } from "../config";
+
+const pillars = [
+  { code: "S·01", name: "Feel first", blurb: "The first ten seconds in the hand decide everything. We tune input, timing, and feedback until the game feels right before we add a single extra feature." },
+  { code: "S·02", name: "Systems over noise", blurb: "Depth comes from a few clean systems that interact, not from piling on menus. Easy to learn, worth mastering, built to last past launch week." },
+  { code: "S·03", name: "Respect the player", blurb: "Fair progression, honest monetization, and a game that respects your time. The kind of title you recommend, not the kind you uninstall." },
+];
+---
+
+<Layout division="studio" path="/studio" title="NJYN Studio · Games, engineered." description="NJYN Studio is the game division of NJYN Inc. in Toronto, building mobile-first games with tight feel and clean systems. First title in development.">
+  <!-- HERO -->
+  <header class="relative z-10 overflow-hidden pt-36 md:pt-44 pb-12 md:pb-16">
+    <div class="heat" aria-hidden="true" style="top:-240px; right:-180px;"></div>
+    <div class="grid md:grid-cols-[1.2fr_0.8fr] items-center gap-10 px-6 md:px-20 lg:px-28 relative z-10">
+      <div class="border-l-2 border-ember pl-6 md:pl-10">
+        <p class="label text-muted mb-6">NJYN Studio · A division of NJYN Inc. · Toronto</p>
+        <h1 class="display text-[clamp(3rem,8vw,7rem)]">
+          Games,<br /><span class="serif-accent text-ember text-[1.08em]">engineered.</span>
+        </h1>
+        <p class="mt-8 max-w-[48ch] text-muted text-[clamp(1rem,1.4vw,1.15rem)] leading-relaxed">
+          NJYN Studio makes mobile-first games with the obsession of a machine. Tight feel, clean systems,
+          no wasted frames. Our first title is in development now.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a href="#reel" class="display text-[0.85rem] tracking-[0.04em] bg-ember text-obsidian px-8 py-4 no-underline hover:bg-ember2 transition-colors">Play the reel &darr;</a>
+          <a href={STUDIO_URL} class="display text-[0.85rem] tracking-[0.04em] border border-ember text-ember2 px-8 py-4 no-underline hover:bg-ember hover:text-obsidian transition-colors">Get first look</a>
+        </div>
+      </div>
+      <div class="justify-self-center md:justify-self-end">
+        <Mark accent="#FF4A26" animate class="w-[170px] md:w-[270px] h-auto" label="NJYN Studio mark" />
+      </div>
+    </div>
+  </header>
+
+  <div class="shimmer-rule relative z-10" aria-hidden="true"></div>
+
+  <!-- REEL -->
+  <section id="reel" class="relative z-10 py-20 md:py-28 scroll-mt-20">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-ember/30 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">Boot sequence</h2>
+        <span class="label text-ember hidden sm:block">FIG. 01 · 5s · Sound on</span>
+      </div>
+      <div class="rev brackets border border-ember/30 bg-black">
+        <video id="reel-video" class="block w-full aspect-video" src="/media/studio-intro.mp4" poster="/media/studio-poster.jpg"
+               autoplay muted loop playsinline controls preload="metadata"></video>
+      </div>
+      <div class="rev mt-5 flex flex-wrap items-center justify-between gap-4">
+        <p class="label text-muted">The first thing you see every time a NJYN Studio game boots.</p>
+        <button id="sound-btn" class="label text-ember2 border border-ember/40 hover:border-ember px-4 py-2.5 bg-transparent cursor-pointer">Unmute &amp; replay</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIRST TITLE -->
+  <section id="title" class="relative z-10 pb-20 md:pb-28">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-ember/30 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">Now building</h2>
+        <span class="label text-muted hidden sm:block">FIG. 02 · Title 001</span>
+      </div>
+      <div class="grid md:grid-cols-[1.1fr_0.9fr] gap-8">
+        <div class="rev relative border border-ember/30 bg-obsidian2 overflow-hidden min-h-[320px] flex flex-col justify-end p-8 md:p-10">
+          <div class="absolute inset-0 opacity-[0.07] flex items-center justify-center pointer-events-none">
+            <Mark accent="#FF4A26" class="w-[46%] h-auto" />
+          </div>
+          <span class="label text-ember relative">Title 001 · Classified</span>
+          <h3 class="display text-[clamp(2rem,4.4vw,3.6rem)] mt-3 relative">First look<br />coming soon.</h3>
+          <p class="text-muted leading-relaxed mt-4 max-w-[44ch] relative">
+            Our debut mobile title is in active development. Name, platforms, and the first trailer drop here first.
+          </p>
+        </div>
+        <div class="rev brackets border border-ember/30 bg-obsidian2">
+          <div class="label text-muted border-b border-ember/20 px-5 py-3.5 flex justify-between">
+            <span>Build sheet</span><span class="text-ember">Live</span>
+          </div>
+          <dl class="px-5">
+            {[["Studio", "NJYN Studio, Toronto"], ["Format", "Mobile-first"], ["Status", "In development"], ["Reveal", "First look by email"]].map(([k, v]) => (
+              <div class="grid grid-cols-[110px_1fr] gap-4 border-b border-ember/15 py-4 items-baseline">
+                <dt class="label text-muted">{k}</dt><dd class="text-txt text-[0.95rem]">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <div class="p-5">
+            <a href={STUDIO_URL} class="display block text-center text-[0.85rem] tracking-[0.04em] bg-ember text-obsidian px-8 py-4 no-underline hover:bg-ember2 transition-colors">Get first look &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW WE BUILD -->
+  <section class="relative z-10 pb-20 md:pb-28">
+    <div class="px-6 md:px-20 lg:px-28">
+      <div class="rev flex items-baseline justify-between border-b border-ember/30 pb-3.5 mb-10 md:mb-14">
+        <h2 class="display text-[clamp(1.7rem,3.6vw,2.8rem)]">How we build</h2>
+        <span class="label text-muted hidden sm:block">FIG. 03 · Studio principles</span>
+      </div>
+      <div class="border-t border-ember/30">
+        {pillars.map((p) => (
+          <div class="rev grid md:grid-cols-[110px_1fr_1.4fr] gap-3 md:gap-12 items-baseline border-b border-ember/25 py-8 md:py-12 hover:bg-obsidian2 transition-colors">
+            <span class="label text-muted">{p.code}</span>
+            <h3 class="display text-[clamp(1.7rem,3.8vw,3rem)]">{p.name}</h3>
+            <p class="text-muted text-[0.97rem] leading-relaxed max-w-[54ch]">{p.blurb}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="relative z-10 border-t border-ember/25 py-24 md:py-32 overflow-hidden">
+    <div class="heat" aria-hidden="true" style="bottom:-320px; left:-240px;"></div>
+    <div class="px-6 md:px-20 lg:px-28 relative z-10 grid md:grid-cols-[1.2fr_0.8fr] gap-12 items-end">
+      <div class="rev">
+        <h2 class="display text-[clamp(2.3rem,6vw,5rem)]">Be first<br /><span class="serif-accent text-ember">in the game.</span></h2>
+        <p class="text-muted mt-6 max-w-[46ch]">Players, press, publishers, and partners: reach the studio directly.</p>
+      </div>
+      <div class="rev">
+        <a href={STUDIO_URL} class="display block text-center text-[0.9rem] tracking-[0.04em] bg-ember text-obsidian px-10 py-5 no-underline hover:bg-ember2 transition-colors">Contact the Studio &rarr;</a>
+        <a href="/" class="label block text-center text-muted hover:text-txt no-underline mt-5">A NJYN Inc. company</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const v = document.getElementById("reel-video") as HTMLVideoElement;
+    const b = document.getElementById("sound-btn") as HTMLButtonElement;
+    b?.addEventListener("click", () => {
+      v.muted = !v.muted;
+      if (!v.muted) { v.currentTime = 0; v.play(); }
+      b.textContent = v.muted ? "Unmute & replay" : "Mute";
+    });
+  </script>
+</Layout>

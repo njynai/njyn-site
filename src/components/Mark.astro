@@ -1,0 +1,10 @@
+---
+import paths from "../mark-paths.json";
+interface Props { accent?: string; core?: string; class?: string; label?: string; animate?: boolean }
+const { accent = "#D4AF6A", core = "#F2EEE6", class: cls = "", label = "NJYN", animate = false } = Astro.props;
+---
+<svg class={`${cls} ${animate ? "mark-anim" : ""}`} viewBox="-90 -103 180 206" role="img" aria-label={label}>
+  <path class="m-roof" d={paths.roof} fill={accent} />
+  <path class="m-n" d={paths.N} fill={core} />
+  <path class="m-floor" d={paths.floor} fill={accent} />
+</svg>
