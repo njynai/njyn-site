@@ -1,86 +1,139 @@
 ---
 import "../styles/global.css";
-import { BOOKING_URL, BOOKING_LABEL } from "../config";
+import Mark from "../components/Mark.astro";
+import { BOOKING_URL, BOOKING_LABEL, EMAIL } from "../config";
 
 interface Props {
   title?: string;
   description?: string;
+  division?: "inc" | "studio" | "ai";
+  path?: string;
 }
 
 const {
-  title = "NJYN.AI · The engine that makes AI recommend you",
-  description = "AI search visibility and workflow automation for clinics and small businesses. Run a live prompt and see who AI recommends today. Toronto.",
+  title = "NJYN Inc. · One core. Two engines.",
+  description = "NJYN Inc. is a Toronto company with two divisions: NJYN Studio, which makes games, and NJYN AI, which puts AI to work inside businesses.",
+  division = "inc",
+  path = "/",
 } = Astro.props;
+
+const ACCENT = { inc: "#F2EEE6", studio: "#FF4A26", ai: "#D4AF6A" }[division];
+const DESC = { inc: "INC.", studio: "STUDIO", ai: "AI" }[division];
+const DESC_COLOR = { inc: "#8A8F9C", studio: "#FF4A26", ai: "#D4AF6A" }[division];
+const og = { inc: "/images/og.png", studio: "/images/og-studio.png", ai: "/images/og-ai.png" }[division];
+
+const nav = [
+  { href: "/studio", label: "Studio", active: division === "studio" },
+  { href: "/ai", label: "AI", active: division === "ai" },
+  { href: "/#company", label: "Company", active: false },
+];
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style={`--accent:${ACCENT}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href="https://njyn.ai" />
+    <link rel="canonical" href={`https://njyn.ai${path}`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://njyn.ai/images/og.png" />
+    <meta property="og:image" content={`https://njyn.ai${og}`} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://njyn.ai/images/og.png" />
+    <meta name="twitter:image" content={`https://njyn.ai${og}`} />
+    <meta name="theme-color" content="#07090F" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
       rel="stylesheet"
     />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "NJYN Inc.",
+      url: "https://njyn.ai",
+      logo: "https://njyn.ai/images/njyn-inc-mark.png",
+      email: EMAIL,
+      founder: { "@type": "Person", name: "Jason Trinh" },
+      address: { "@type": "PostalAddress", addressLocality: "Toronto", addressRegion: "ON", addressCountry: "CA" },
+      subOrganization: [
+        { "@type": "Organization", name: "NJYN Studio", url: "https://njyn.ai/studio" },
+        { "@type": "Organization", name: "NJYN AI", url: "https://njyn.ai/ai" },
+      ],
+    })} />
   </head>
   <body>
     <div class="scanlines" aria-hidden="true"></div>
 
-    <nav class="fixed top-0 left-0 right-0 z-50 border-b border-gold/20 bg-obsidian/90 backdrop-blur-md">
+    <nav class="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-obsidian/85 backdrop-blur-md">
       <div class="flex items-center justify-between h-[72px] px-6 md:px-20 lg:px-28">
-        <a href="#top" class="flex items-center gap-3 no-underline">
-          <svg width="32" height="32" viewBox="0 0 100 100" aria-hidden="true">
-            <polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="none" stroke="#E8E4F0" stroke-width="3" />
-            <circle cx="50" cy="50" r="10" fill="#C9A96E" />
-          </svg>
-          <span class="display text-[1.15rem] tracking-[0.08em]">NJYN<span class="text-gold">.AI</span></span>
+        <a href="/" class="flex items-center gap-3.5 no-underline" aria-label="NJYN home">
+          <Mark accent={ACCENT} class="w-[30px] h-auto" />
+          <span class="display text-[1.12rem] tracking-[0.06em] text-txt">NJYN</span>
+          <span class="hidden sm:inline-block w-px h-5 opacity-50" style={`background:${DESC_COLOR}`}></span>
+          <span class="hidden sm:inline label !text-[0.68rem] !tracking-[0.3em]" style={`color:${DESC_COLOR}`}>{DESC}</span>
         </a>
-        <div class="hidden md:flex items-center gap-9 label !text-[0.8rem] text-muted">
-          <a href="#demo" class="hover:text-txt transition-colors no-underline">Live demo</a>
-          <a href="#system" class="hover:text-txt transition-colors no-underline">The system</a>
-          <a href="#process" class="hover:text-txt transition-colors no-underline">Process</a>
-          <a href="#operator" class="hover:text-txt transition-colors no-underline">The team</a>
+        <div class="hidden md:flex items-center gap-9 label !text-[0.76rem] text-muted">
+          {nav.map((n) => (
+            <a href={n.href} class={`no-underline transition-colors hover:text-txt ${n.active ? "text-txt" : ""}`}
+               style={n.active ? `color:${ACCENT}` : ""}>{n.label}</a>
+          ))}
         </div>
-        <a
-          href={BOOKING_URL}
-          class="display text-[0.8rem] tracking-[0.04em] bg-gold text-obsidian px-5 py-3 no-underline hover:bg-gold2 transition-colors"
-          >{BOOKING_LABEL} &rarr;</a
-        >
+        {division === "ai" ? (
+          <a href={BOOKING_URL} class="display text-[0.78rem] tracking-[0.04em] bg-gold text-obsidian px-5 py-3 no-underline hover:bg-gold2 transition-colors">{BOOKING_LABEL} &rarr;</a>
+        ) : division === "studio" ? (
+          <a href="#reel" class="display text-[0.78rem] tracking-[0.04em] bg-ember text-obsidian px-5 py-3 no-underline hover:bg-ember2 transition-colors">Play the reel</a>
+        ) : (
+          <a href={`mailto:${EMAIL}`} class="display text-[0.78rem] tracking-[0.04em] border border-txt/40 text-txt px-5 py-3 no-underline hover:bg-txt hover:text-obsidian transition-colors">Contact</a>
+        )}
       </div>
     </nav>
 
     <slot />
 
-    <footer class="relative z-10 border-t border-gold/20 py-5">
-      <div class="px-6 md:px-20 lg:px-28 flex flex-wrap justify-between gap-2 label text-muted">
-        <span>&copy; 2026 NJYN.AI · Toronto</span>
-        <span>njyn.ai · jasontrinh.com</span>
+    <footer class="relative z-10 border-t border-white/10 pt-14 pb-8">
+      <div class="px-6 md:px-20 lg:px-28">
+        <div class="grid md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 pb-12">
+          <div>
+            <div class="flex items-center gap-3.5">
+              <Mark accent="#F2EEE6" class="w-[34px] h-auto" />
+              <span class="display text-[1.25rem] tracking-[0.06em]">NJYN</span>
+              <span class="label text-graphite !tracking-[0.3em]">INC.</span>
+            </div>
+            <p class="serif-accent text-[1.35rem] text-txt mt-5">One core. Two engines.</p>
+          </div>
+          <div>
+            <div class="label text-ember mb-3">Studio</div>
+            <a href="/studio" class="block text-muted hover:text-txt no-underline text-[0.92rem] mb-1.5">Games</a>
+            <a href="/studio#reel" class="block text-muted hover:text-txt no-underline text-[0.92rem]">The reel</a>
+          </div>
+          <div>
+            <div class="label text-gold mb-3">AI</div>
+            <a href="/ai#system" class="block text-muted hover:text-txt no-underline text-[0.92rem] mb-1.5">Automation &amp; AI integration</a>
+            <a href="/ai#demo" class="block text-muted hover:text-txt no-underline text-[0.92rem]">Automation finder</a>
+          </div>
+          <div>
+            <div class="label text-graphite mb-3">Company</div>
+            <a href={`mailto:${EMAIL}`} class="block text-muted hover:text-txt no-underline text-[0.92rem] mb-1.5">{EMAIL}</a>
+            <span class="block text-muted text-[0.92rem]">Toronto, Canada</span>
+          </div>
+        </div>
+        <div class="flex flex-wrap justify-between gap-2 label text-graphite border-t border-white/10 pt-6">
+          <span>&copy; 2026 NJYN Inc. · Toronto</span>
+          <span>njyn.ai</span>
+        </div>
       </div>
     </footer>
 
     <script>
       const io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add("in");
-              io.unobserve(e.target);
-            }
-          });
-        },
+        (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }),
         { threshold: 0.12 }
       );
       document.querySelectorAll(".rev").forEach((el) => io.observe(el));
